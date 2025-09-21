@@ -32,8 +32,14 @@ public class buildScene : MonoBehaviour
         // *** in unity, 1 unit = 1 meter. the scale (1,1,1) is 10x10 by default (for a plane it isx and z axis). ***
         firstFloor.transform.localScale = new Vector3 (5f,1f,5f); //plane is 50x50
 
+        //another first floor plane 
+        GameObject firstFloorPlaneTwo = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        firstFloorPlaneTwo.name = "firstFloorPlaneTwo";
+        firstFloorPlaneTwo.transform.position = new Vector3 (-50,0,0);
+        firstFloorPlaneTwo.transform.localScale = new Vector3 (5f,1f,5f);
+
         // --- WALLS ---
-        GameObject wallOne = BuildWall(firstFloor, "wallOne", new Vector3(1f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f);
+        GameObject wallOne = BuildWall(firstFloor, "wallOne", new Vector3(1f, 3f, 9f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f);
         GameObject wallTwo = BuildWall(firstFloor, "wallTwo", new Vector3 (0.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -5f, 0f, 0f);
         GameObject wallThree = BuildWall(firstFloor, "wallThree", new Vector3 (1f, 3f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, -4f, 0f, 0f);
         GameObject wallOneBesideDoorTwo = BuildWall(firstFloor, "wallOneBesideDoorTwo", new Vector3 (0.5f, 3f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 0f, 0f);
@@ -42,6 +48,12 @@ public class buildScene : MonoBehaviour
         GameObject wallFive = BuildWall(firstFloor, "wallFive", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 2.5f);
         GameObject wallSix = BuildWall(firstFloor, "wallSix", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 0f);
         GameObject wallSeven = BuildWall(firstFloor, "wallSeven", new Vector3 (1.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -11.75f, 0f, 0f);
+        GameObject wallEight = BuildWall(firstFloorPlaneTwo, "wallEight", new Vector3 (1.5f, 3f, 1f), SideOne.right,  SideTwo.front, SideThree.nothing, 0.5f, 9f, 0f);
+        GameObject wallNine = BuildWall(firstFloor, "wallNine", new Vector3(1f, 3f, 9f), SideOne.left,  SideTwo.front, SideThree.nothing, -13.25f, 0f, 0f);
+        GameObject wallTen = BuildWall(firstFloor, "wallTen", new Vector3(7f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -6.25f, 9f, 0f);
+        // Rotate 90° around Y relative to current rotation
+        wallEight.transform.Rotate(0f, 45f, 0f);
+
     
     
 
@@ -50,7 +62,6 @@ public class buildScene : MonoBehaviour
         BuildDoor(firstFloor, "doorTwo",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 0f, 0f);
         BuildDoor(firstFloor, "doorThree",new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 2.9f, 0f);
         BuildDoor(firstFloor, "doorFour", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 2.9f, 0f);
-
         // --- glass pannels besides doors ---
         BuildGlassPannel(firstFloor, "glassPannelOne", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -1f, 2.9f, 0f);
         BuildGlassPannel(firstFloor, "glassPannelTwo", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.5f, 2.9f, 0f); 
@@ -263,8 +274,8 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
     }
 
     // clamp inside X/Z so b never hangs off the anchor
-    pos.x = Mathf.Clamp(pos.x, posA.x - halfA.x + halfB.x, posA.x + halfA.x - halfB.x);
-    pos.z = Mathf.Clamp(pos.z, posA.z - halfA.z + halfB.z, posA.z + halfA.z - halfB.z);
+    // pos.x = Mathf.Clamp(pos.x, posA.x - halfA.x + halfB.x, posA.x + halfA.x - halfB.x);
+    // pos.z = Mathf.Clamp(pos.z, posA.z - halfA.z + halfB.z, posA.z + halfA.z - halfB.z);
 
     // move b into place
     b.transform.position = pos;
