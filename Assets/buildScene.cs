@@ -43,18 +43,27 @@ public class buildScene : MonoBehaviour
         // a renderer is a unity component that draws the object on the screen
         // get the renderer components for each object
         
-        // --- create wallTwo (cube) ---
-        GameObject wallTwo = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wallTwo.name = "wallTwo";
-        wallTwo.transform.localScale = new Vector3 (2f,3f,1f);
-        PlaceObject(wallOne, wallTwo, SideOne.left, SideTwo.front, 0f, 0f);
+        // --- create DoorOne (cube) ---
+        GameObject doorOne = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        doorOne.name = "doorOne";
+        doorOne.transform.localScale = new Vector3 (1f,2f,0.1f);
+        PlaceObjectOnPlane(firstFloor, doorOne, SideOne.left, SideTwo.front, 1f, 0f);
+        addGlassMaterial(doorOne);
+
+        // --- create DoorTwo (cube) ---
+        GameObject doorTwo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        doorTwo.name = "doorTwo";
+        doorTwo.transform.localScale = new Vector3 (1f,2f,0.1f);
+        PlaceObjectOnPlane(firstFloor, doorTwo, SideOne.left, SideTwo.front, 2f, 0f);
+        addGlassMaterial(doorTwo);
 
         GameObject wallThree = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wallThree.name = "wallThree";
         wallThree.transform.localScale = new Vector3 (2f,3f,1f);
-        PlaceObject(wallOne, wallThree, SideOne.left, SideTwo.front, 0f, 0f);
+        PlaceObject(wallOne, wallThree, SideOne.left, SideTwo.front, 4f, 4f);
 
         addMaterial(wallOne, Color.yellow);
+        
 
 
         // --- Aim the Main Camera so you can see everything ---
@@ -149,12 +158,12 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
     switch (sideOne)
     {
         case SideOne.right:
-            pos.x = posA.x + (halfA.x - halfB.x) + edgeOneOffset; // keep b inside the right edge
+            pos.x = posA.x - (halfA.x - halfB.x) + edgeOneOffset; // keep b inside the right edge
             pos.y = topA + halfB.y;               // rest on top
             break;
 
         case SideOne.left:
-            pos.x = posA.x - (halfA.x - halfB.x) - edgeOneOffset;
+            pos.x = posA.x + (halfA.x - halfB.x) - edgeOneOffset;
             pos.y = topA + halfB.y;
             break;
 
@@ -181,12 +190,12 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
     switch (sideTwo)
     {
         case SideTwo.right:
-            pos.x = posA.x + (halfA.x - halfB.x) + edgeTwoOffset; // keep b inside the right edge
+            pos.x = posA.x - (halfA.x - halfB.x) + edgeTwoOffset; // keep b inside the right edge
             pos.y = topA + halfB.y;               // rest on top
             break;
 
         case SideTwo.left:
-            pos.x = posA.x - (halfA.x - halfB.x) - edgeTwoOffset;
+            pos.x = posA.x + (halfA.x - halfB.x) - edgeTwoOffset;
             pos.y = topA + halfB.y;
             break;
 
@@ -227,6 +236,27 @@ void addMaterial(GameObject obj, Color objColor){
 
     //set material color and assign it to the object
     mat.color = objColor;
+    rend.material = mat;
+}
+
+void addGlassMaterial(GameObject obj){
+    Renderer rend = obj.GetComponent<Renderer>();
+
+    // Create a URP/Lit material
+    Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+
+    // Light blue tint, partly see-through
+    mat.SetColor("_BaseColor", new Color(0.9f, 0.9f, 1f, 0.1f)); 
+
+    // Tell Unity it’s transparent
+    mat.SetFloat("_Surface", 1f);  
+    mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+    // Make it shiny like glass
+    mat.SetFloat("_Smoothness", 1f);
+    mat.SetFloat("_Metallic", 1f);
+
+    // Assign to object
     rend.material = mat;
 }
 }
