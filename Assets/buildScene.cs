@@ -54,12 +54,7 @@ public class buildScene : MonoBehaviour
         wallThree.transform.localScale = new Vector3 (2f,3f,1f);
         PlaceObject(wallOne, wallThree, SideOne.left, SideTwo.front, 0f, 0f);
 
-        // grab its renderer
-        Renderer rend = wallOne.GetComponent<Renderer>();
-
-        Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        mat.color = Color.red;
-        rend.material = mat;
+        addMaterial(wallOne, Color.yellow);
 
 
         // --- Aim the Main Camera so you can see everything ---
@@ -222,4 +217,16 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
     b.transform.position = pos;
 }
 
+// --- FUNCTION TO ADD MATERIAL TO OBJECT
+void addMaterial(GameObject obj, Color objColor){
+    // grab its renderer
+    Renderer rend = obj.GetComponent<Renderer>();
+
+    //create a new material
+    Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+
+    //set material color and assign it to the object
+    mat.color = objColor;
+    rend.material = mat;
+}
 }
