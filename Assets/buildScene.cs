@@ -38,7 +38,7 @@ public class buildScene : MonoBehaviour
         // place wallOne on top of firstFloor 
         // calculate object positions from the plane’s current size and center, instead of hard-coding numbers.
         // this way we can update the plane size if needed without messing everyting else up
-        PlaceObjectOnPlane(firstFloor, wallOne, SideOne.left, SideTwo.back, 0f, 0f);
+        PlaceObjectOnPlane(firstFloor, wallOne, SideOne.left, SideTwo.front, 0f, 0f);
 
         // a renderer is a unity component that draws the object on the screen
         // get the renderer components for each object
@@ -52,12 +52,15 @@ public class buildScene : MonoBehaviour
         GameObject wallThree = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wallThree.name = "wallThree";
         wallThree.transform.localScale = new Vector3 (2f,3f,1f);
-        PlaceObject(wallOne, wallThree, SideOne.right, SideTwo.front, 30f, 3f);
+        PlaceObject(wallOne, wallThree, SideOne.left, SideTwo.front, 0f, 0f);
 
-        // Make the cube a color
-        var wr = wallOne.GetComponent<Renderer>();
-        wr.sharedMaterial = new Material(Shader.Find("Standard"));
-        wr.sharedMaterial.color = new Color(0.5f, 0.5f, 1f);
+        // grab its renderer
+        Renderer rend = wallOne.GetComponent<Renderer>();
+
+        Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        mat.color = Color.red;
+        rend.material = mat;
+
 
         // --- Aim the Main Camera so you can see everything ---
         var cam = Camera.main;
@@ -105,10 +108,10 @@ void PlaceObject(GameObject a, GameObject b, SideOne sideOne, SideTwo sideTwo,
     // --- sideOne ---
     switch (sideOne)
     {
-        case SideOne.right: pos.x = posA.x + (halfA.x - halfB.x) + edgeOneOffset; break;
-        case SideOne.left:  pos.x = posA.x - (halfA.x - halfB.x) - edgeOneOffset; break;
-        case SideOne.front: pos.z = posA.z + (halfA.z - halfB.z) + edgeOneOffset; break;
-        case SideOne.back:  pos.z = posA.z - (halfA.z - halfB.z) - edgeOneOffset; break;
+        case SideOne.right: pos.x = posA.x - (halfA.x - halfB.x) + edgeOneOffset; break;
+        case SideOne.left:  pos.x = posA.x + (halfA.x - halfB.x) - edgeOneOffset; break;
+        case SideOne.front: pos.z = posA.z - (halfA.z - halfB.z) + edgeOneOffset; break;
+        case SideOne.back:  pos.z = posA.z + (halfA.z - halfB.z) - edgeOneOffset; break;
         case SideOne.above: pos.y = topA + halfB.y + edgeOneOffset; break;
         case SideOne.below: pos.y = bottomA - halfB.y - edgeOneOffset; break;
     }
@@ -116,10 +119,10 @@ void PlaceObject(GameObject a, GameObject b, SideOne sideOne, SideTwo sideTwo,
     // --- sideTwo ---
     switch (sideTwo)
     {
-        case SideTwo.right: pos.x = posA.x + (halfA.x - halfB.x) + edgeTwoOffset; break;
-        case SideTwo.left:  pos.x = posA.x - (halfA.x - halfB.x) - edgeTwoOffset; break;
-        case SideTwo.front: pos.z = posA.z + (halfA.z - halfB.z) + edgeTwoOffset; break;
-        case SideTwo.back:  pos.z = posA.z - (halfA.z - halfB.z) - edgeTwoOffset; break;
+        case SideTwo.right: pos.x = posA.x - (halfA.x - halfB.x) + edgeTwoOffset; break;
+        case SideTwo.left:  pos.x = posA.x + (halfA.x - halfB.x) - edgeTwoOffset; break;
+        case SideTwo.front: pos.z = posA.z - (halfA.z - halfB.z) + edgeTwoOffset; break;
+        case SideTwo.back:  pos.z = posA.z + (halfA.z - halfB.z) - edgeTwoOffset; break;
         case SideTwo.above: pos.y = topA + halfB.y + edgeTwoOffset; break;
         case SideTwo.below: pos.y = bottomA - halfB.y - edgeTwoOffset; break;
     }
@@ -161,12 +164,12 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
             break;
 
         case SideOne.front:
-            pos.z = posA.z + (halfA.z - halfB.z) + edgeOneOffset;
+            pos.z = posA.z - (halfA.z - halfB.z) + edgeOneOffset;
             pos.y = topA + halfB.y;
             break;
 
         case SideOne.back:
-            pos.z = posA.z - (halfA.z - halfB.z) - edgeOneOffset;
+            pos.z = posA.z + (halfA.z - halfB.z) - edgeOneOffset;
             pos.y = topA + halfB.y;
             break;
 
@@ -193,12 +196,12 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
             break;
 
         case SideTwo.front:
-            pos.z = posA.z + (halfA.z - halfB.z) + edgeTwoOffset;
+            pos.z = posA.z - (halfA.z - halfB.z) + edgeTwoOffset;
             pos.y = topA + halfB.y;
             break;
 
         case SideTwo.back:
-            pos.z = posA.z - (halfA.z - halfB.z) - edgeTwoOffset;
+            pos.z = posA.z + (halfA.z - halfB.z) - edgeTwoOffset;
             pos.y = topA + halfB.y;
             break;
 
