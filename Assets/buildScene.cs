@@ -30,40 +30,21 @@ public class buildScene : MonoBehaviour
         // *** in unity, 1 unit = 1 meter. the scale (1,1,1) is 10x10 by default (for a plane it isx and z axis). ***
         firstFloor.transform.localScale = new Vector3 (5f,1f,5f); //plane is 50x50
 
-        // --- create wallOne (cube) ---
-        GameObject wallOne = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wallOne.name = "wallOne";
-        wallOne.transform.localScale = new Vector3 (1f,3f,6f);
-
-        // place wallOne on top of firstFloor 
-        // calculate object positions from the plane’s current size and center, instead of hard-coding numbers.
-        // this way we can update the plane size if needed without messing everyting else up
-        PlaceObjectOnPlane(firstFloor, wallOne, SideOne.left, SideTwo.front, 0f, 0f);
-
-        // a renderer is a unity component that draws the object on the screen
-        // get the renderer components for each object
+        // --- WALLS ---
+        BuildWall(firstFloor, "wallOne", new Vector3(1f, 3f, 6f), SideOne.left, SideTwo.front, 0f, 0f);
         
-        // --- create DoorOne (cube) ---
-        GameObject doorOne = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        doorOne.name = "doorOne";
-        doorOne.transform.localScale = new Vector3 (1f,2f,0.1f);
-        PlaceObjectOnPlane(firstFloor, doorOne, SideOne.left, SideTwo.front, 1f, 0f);
-        addGlassMaterial(doorOne);
+    
 
-        // --- create DoorTwo (cube) ---
-        GameObject doorTwo = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        doorTwo.name = "doorTwo";
-        doorTwo.transform.localScale = new Vector3 (1f,2f,0.1f);
-        PlaceObjectOnPlane(firstFloor, doorTwo, SideOne.left, SideTwo.front, 2f, 0f);
-        addGlassMaterial(doorTwo);
+        // --- DOORS ---
+        BuildDoor(firstFloor, "doorOne", new Vector3(1f, 2f, 0.1f), SideOne.left, SideTwo.front, -1.5f, 0f);
+        BuildDoor(firstFloor, "doorTwo", new Vector3(1f, 2f, 0.1f), SideOne.left, SideTwo.front, -2.5f, 0f);
+        BuildDoor(firstFloor, "doorThree", new Vector3(1f, 2f, 0.1f), SideOne.left, SideTwo.front, -1.5f, 2f);
+        BuildDoor(firstFloor, "doorFour", new Vector3(1f, 2f, 0.1f), SideOne.left, SideTwo.front, -2.5f, 2f);
 
-        GameObject wallThree = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wallThree.name = "wallThree";
-        wallThree.transform.localScale = new Vector3 (2f,3f,1f);
-        PlaceObject(wallOne, wallThree, SideOne.left, SideTwo.front, 4f, 4f);
+        // --- glass pannels besides doors ---
+        BuildGlassPannel(firstFloor, "glassPannelOne", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, -1f, 2f);
+        BuildGlassPannel(firstFloor, "glassPannelTwo", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, -3.5f, 2f); 
 
-        addMaterial(wallOne, Color.yellow);
-        
 
 
         // --- Aim the Main Camera so you can see everything ---
@@ -91,10 +72,12 @@ void PlaceObject(GameObject a, GameObject b, SideOne sideOne, SideTwo sideTwo,
                  float edgeOneOffset, float edgeTwoOffset)
 {
     // renderers for both objects
-    Renderer anchorRenderer = a.GetComponent<Renderer>();
-    Renderer objectRenderer = b.GetComponent<Renderer>();
+    // a renderer is a unity component that draws the object on the screen
     // use renderer to get the objects bounds and half of its size 
     // components of object being aligned to 
+    Renderer anchorRenderer = a.GetComponent<Renderer>();
+    Renderer objectRenderer = b.GetComponent<Renderer>();
+
 
     // half-sizes of objects
     Vector3 halfA = anchorRenderer.bounds.extents;   // anchor half-size
@@ -112,10 +95,10 @@ void PlaceObject(GameObject a, GameObject b, SideOne sideOne, SideTwo sideTwo,
     // --- sideOne ---
     switch (sideOne)
     {
-        case SideOne.right: pos.x = posA.x - (halfA.x - halfB.x) + edgeOneOffset; break;
-        case SideOne.left:  pos.x = posA.x + (halfA.x - halfB.x) - edgeOneOffset; break;
-        case SideOne.front: pos.z = posA.z - (halfA.z - halfB.z) + edgeOneOffset; break;
-        case SideOne.back:  pos.z = posA.z + (halfA.z - halfB.z) - edgeOneOffset; break;
+        case SideOne.right: pos.x = posA.x + (halfA.x - halfB.x) + edgeOneOffset; break;
+        case SideOne.left:  pos.x = posA.x - (halfA.x - halfB.x) - edgeOneOffset; break;
+        case SideOne.front: pos.z = posA.z + (halfA.z - halfB.z) + edgeOneOffset; break;
+        case SideOne.back:  pos.z = posA.z - (halfA.z - halfB.z) - edgeOneOffset; break;
         case SideOne.above: pos.y = topA + halfB.y + edgeOneOffset; break;
         case SideOne.below: pos.y = bottomA - halfB.y - edgeOneOffset; break;
     }
@@ -123,10 +106,10 @@ void PlaceObject(GameObject a, GameObject b, SideOne sideOne, SideTwo sideTwo,
     // --- sideTwo ---
     switch (sideTwo)
     {
-        case SideTwo.right: pos.x = posA.x - (halfA.x - halfB.x) + edgeTwoOffset; break;
-        case SideTwo.left:  pos.x = posA.x + (halfA.x - halfB.x) - edgeTwoOffset; break;
-        case SideTwo.front: pos.z = posA.z - (halfA.z - halfB.z) + edgeTwoOffset; break;
-        case SideTwo.back:  pos.z = posA.z + (halfA.z - halfB.z) - edgeTwoOffset; break;
+        case SideTwo.right: pos.x = posA.x + (halfA.x - halfB.x) + edgeTwoOffset; break;
+        case SideTwo.left:  pos.x = posA.x - (halfA.x - halfB.x) - edgeTwoOffset; break;
+        case SideTwo.front: pos.z = posA.z + (halfA.z - halfB.z) + edgeTwoOffset; break;
+        case SideTwo.back:  pos.z = posA.z - (halfA.z - halfB.z) - edgeTwoOffset; break;
         case SideTwo.above: pos.y = topA + halfB.y + edgeTwoOffset; break;
         case SideTwo.below: pos.y = bottomA - halfB.y - edgeTwoOffset; break;
     }
@@ -158,12 +141,12 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
     switch (sideOne)
     {
         case SideOne.right:
-            pos.x = posA.x - (halfA.x - halfB.x) + edgeOneOffset; // keep b inside the right edge
+            pos.x = posA.x + (halfA.x - halfB.x) + edgeOneOffset; // keep b inside the right edge
             pos.y = topA + halfB.y;               // rest on top
             break;
 
         case SideOne.left:
-            pos.x = posA.x + (halfA.x - halfB.x) - edgeOneOffset;
+            pos.x = posA.x - (halfA.x - halfB.x) - edgeOneOffset;
             pos.y = topA + halfB.y;
             break;
 
@@ -190,12 +173,12 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
     switch (sideTwo)
     {
         case SideTwo.right:
-            pos.x = posA.x - (halfA.x - halfB.x) + edgeTwoOffset; // keep b inside the right edge
+            pos.x = posA.x + (halfA.x - halfB.x) + edgeTwoOffset; // keep b inside the right edge
             pos.y = topA + halfB.y;               // rest on top
             break;
 
         case SideTwo.left:
-            pos.x = posA.x + (halfA.x - halfB.x) - edgeTwoOffset;
+            pos.x = posA.x - (halfA.x - halfB.x) - edgeTwoOffset;
             pos.y = topA + halfB.y;
             break;
 
@@ -226,7 +209,7 @@ void PlaceObjectOnPlane(GameObject a, GameObject b, SideOne sideOne, SideTwo sid
     b.transform.position = pos;
 }
 
-// --- FUNCTION TO ADD MATERIAL TO OBJECT
+// --- FUNCTIONS TO ADD MATERIAL TO OBJECT
 void addMaterial(GameObject obj, Color objColor){
     // grab its renderer
     Renderer rend = obj.GetComponent<Renderer>();
@@ -258,5 +241,69 @@ void addGlassMaterial(GameObject obj){
 
     // Assign to object
     rend.material = mat;
+}
+
+
+// BUILD FUNCTIONS 
+void BuildDoor(GameObject floor, string doorName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, 
+                float edgeOneOffset, float edgeTwoOffset){
+    // --- create the door (main cube) ---
+    GameObject door = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    door.name = doorName;
+    door.transform.localScale = scale;
+
+    // place on the plane
+    PlaceObjectOnPlane(floor, door, sideOne, sideTwo, edgeOneOffset, edgeTwoOffset);
+
+    // make it glass
+    addGlassMaterial(door);
+
+    // --- add door pannels ---
+    GameObject pannelOne = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    pannelOne.name = doorName + "PannelOne";
+    pannelOne.transform.localScale = new Vector3(0.1f, 2f, 0.05f);
+    //make pannel a child of door 
+    pannelOne.transform.SetParent(door.transform);
+    PlaceObject(door, pannelOne, SideOne.left, SideTwo.back, 0f, -0.1f);
+
+    GameObject pannelTwo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    pannelTwo.name = doorName + "PannelTwo";
+    pannelTwo.transform.localScale = new Vector3(0.1f, 2f, 0.05f);
+    pannelTwo.transform.SetParent(door.transform);
+    PlaceObject(door, pannelTwo, SideOne.right, SideTwo.back, 0f, -0.1f);
+
+    GameObject pannelThree = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    pannelThree.name = doorName + "PannelThree";
+    pannelThree.transform.localScale = new Vector3(1f, 0.1f, 0.05f);
+    pannelThree.transform.SetParent(door.transform);
+    PlaceObject(door, pannelThree, SideOne.above, SideTwo.back, -0.1f, -0.1f);
+
+    GameObject pannelFour = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    pannelFour.name = doorName + "PannelFour";
+    pannelFour.transform.localScale = new Vector3(1f, 0.1f, 0.05f);
+    pannelFour.transform.SetParent(door.transform);
+    PlaceObject(door, pannelFour, SideOne.below, SideTwo.back, -0.1f, -0.1f);
+}
+
+void BuildGlassPannel(GameObject floor, string pannelName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, 
+                        float edgeOneOffset, float edgeTwoOffset ){
+
+    GameObject glassPannel = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    glassPannel.name = pannelName;
+    glassPannel.transform.localScale = scale;
+    PlaceObjectOnPlane(floor, glassPannel, sideOne, sideTwo, edgeOneOffset, edgeTwoOffset);
+    addGlassMaterial(glassPannel);
+
+}
+
+void BuildWall(GameObject floor, string wallName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, 
+                float edgeOneOffset, float edgeTwoOffset){
+    // calculate object positions from the plane’s current size and center, instead of hard-coding numbers.
+    // this way we can update the plane size if needed without messing everyting else up
+    GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    wall.name = wallName;
+    wall.transform.localScale = scale;
+    PlaceObjectOnPlane(floor, wall, SideOne.left, SideTwo.front, 0f, 0f);
+
 }
 }
