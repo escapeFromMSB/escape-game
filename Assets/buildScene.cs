@@ -38,6 +38,11 @@ public class buildScene : MonoBehaviour
         firstFloorPlaneTwo.transform.position = new Vector3 (-50,0,0);
         firstFloorPlaneTwo.transform.localScale = new Vector3 (5f,1f,5f);
 
+        //cylinder
+        GameObject cylinderOne = BuildCylinder(firstFloor, "coneOne", new Vector3(1.25f, 1.5f, 1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.75f, 8f, 0f);
+        GameObject cylinderTwo = BuildCylinder(firstFloor, "cylinderTwo", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.75f, 9f, 0f);
+        //try rotating this
+
         // --- WALLS ---
         GameObject wallOne = BuildWall(firstFloor, "wallOne", new Vector3(1f, 3f, 9f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f);
         GameObject wallTwo = BuildWall(firstFloor, "wallTwo", new Vector3 (0.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -5f, 0f, 0f);
@@ -48,9 +53,10 @@ public class buildScene : MonoBehaviour
         GameObject wallFive = BuildWall(firstFloor, "wallFive", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 2.5f);
         GameObject wallSix = BuildWall(firstFloor, "wallSix", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 0f);
         GameObject wallSeven = BuildWall(firstFloor, "wallSeven", new Vector3 (1.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -11.75f, 0f, 0f);
-        GameObject wallEight = BuildWall(firstFloorPlaneTwo, "wallEight", new Vector3 (1.5f, 3f, 1f), SideOne.right,  SideTwo.front, SideThree.nothing, 0.5f, 9f, 0f);
-        GameObject wallNine = BuildWall(firstFloor, "wallNine", new Vector3(1f, 3f, 9f), SideOne.left,  SideTwo.front, SideThree.nothing, -13.25f, 0f, 0f);
-        GameObject wallTen = BuildWall(firstFloor, "wallTen", new Vector3(7f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -6.25f, 9f, 0f);
+        GameObject wallEight = BuildWall(firstFloorPlaneTwo, "wallEight", new Vector3 (1.5f, 3f, 1f), SideOne.right,  SideTwo.front, SideThree.nothing, 0.85f, 9f, 0f);
+        GameObject wallNine = BuildWall(firstFloor, "wallNine", new Vector3(1f, 3f, 13f), SideOne.left,  SideTwo.front, SideThree.nothing, -13.25f, 0f, 0f);
+        GameObject wallTen = BuildWall(firstFloor, "wallTen", new Vector3(10f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -3.25f, 13f, 0f);
+        GameObject wallAboveCylinder = BuildWall(firstFloor, "wallAboveCylinder", new Vector3(0.5f, 0.5f, 13f), SideOne.left,  SideTwo.front, SideThree.above, -4f, 0f, 2.5f);
         // Rotate 90° around Y relative to current rotation
         wallEight.transform.Rotate(0f, 45f, 0f);
 
@@ -379,6 +385,16 @@ GameObject BuildWall(GameObject floor, string wallName, Vector3 scale, SideOne s
     return wall;
 }
 
+GameObject BuildCylinder(GameObject floor, string cylinderName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
+                        float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
+        GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        cylinder.name = cylinderName;
+        cylinder.transform.localScale = scale;
+        PlaceObjectOnPlane(floor, cylinder, sideOne, sideTwo, sideThree, edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
+        return cylinder;
+    }
+
+
 void BuildWindow(GameObject anchorObj, string windowName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
                 float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
     GameObject window = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -415,5 +431,6 @@ void BuildWindow(GameObject anchorObj, string windowName, Vector3 scale, SideOne
 
 
 }
+
 
 }
