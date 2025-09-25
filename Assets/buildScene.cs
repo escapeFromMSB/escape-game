@@ -88,6 +88,8 @@ public class buildScene : MonoBehaviour
         {
             Debug.LogWarning("No Main Camera found. Create one (GameObject > Camera).");
         }
+        
+        SpawnPlayerOnTopOf(firstFloor, new Vector3(0f, 0f));
     }
 
     // Update is called once per frame
@@ -414,6 +416,50 @@ void BuildWindow(GameObject anchorObj, string windowName, Vector3 scale, SideOne
     PlaceObject(window, windowPannelFour, SideOne.below, SideTwo.back, SideThree.nothing, -0.1f, -0.1f, 0f);
 
 
+}
+
+GameObject CreateDefaultPlayer(Vector3 spawnPos)
+{
+    // Root object
+    GameObject playerRoot = new GameObject("Player");
+    playerRoot.transform.position = spawnPos;
+
+    // Visual (capsule)
+    GameObject body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+    body.name = "PlayerBody";
+    body.transform.SetParent(playerRoot.transform, worldPositionStays: false);
+    body.transform.localPosition = Vector3.zero;
+
+    // Remove the capsule collider; CharacterController will handle collisions
+    Destroy(body.GetComponent<Collider>());
+
+    // CharacterController
+    var cc = playerRoot.AddComponent<CharacterController>();
+    cc.height = 2f;
+    cc.radius = 0.4f;
+    cc.center = new Vector3(0f, 1f, 0f);
+
+    // Camera
+    GameObject camGO = new GameObject("PlayerCamera");
+    camGO.tag = "MainCamera"; // make it the main camera
+    camGO.AddComponent<Camera>();
+    camGO.transform.SetParent(playerRoot.transform, worldPositionStays: false);
+    camGO.transform.localPosition = new Vector3(0f, 1.6f, 0f);
+
+    // Controller
+    var controller = playerRoot.AddComponent<PlayerController>();
+    controller.cameraPivot = camGO.transform;
+
+    return playerRoot;
+}
+
+void SpawnPlayerOnTopOf(GameObject floor, Vector3 offsetXZ)
+{
+    // Put the player a little above the floor so it settles
+    var rend = floor.GetComponent<Renderer>();
+    float topY = rend ? rend.bounds.max.y : floor.transform.position.y;
+    Vector3 spawn = new Vector3(offsetXZ.x, topY + 0.2f, offsetXZ.y);
+    CreateDefaultPlayer(spawn);
 }
 
 }
