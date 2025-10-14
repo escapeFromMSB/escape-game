@@ -39,8 +39,11 @@ public class buildScene : MonoBehaviour
         firstFloorPlaneTwo.transform.localScale = new Vector3 (5f,1f,5f);
 
         //cylinder
-        GameObject cylinderOne = BuildCylinder(firstFloor, "coneOne", new Vector3(1.25f, 1.5f, 1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.75f, 8f, 0f);
-        GameObject cylinderTwo = BuildCylinder(firstFloor, "cylinderTwo", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.75f, 9f, 0f);
+        GameObject cylinderOne = BuildCylinder(firstFloor, "cylinderOne", new Vector3(1.25f, 1.5f, 1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.75f, 8f, 0f);
+        GameObject cylinderTwo = BuildCylinder(firstFloor, "cylinderTwo", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.68f, 8.9f, 0f);
+        cylinderTwo.transform.Rotate(0f, -45f, 0f);
+        GameObject cylinderThree = BuildCylinder(firstFloor, "cylinderThree", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -3f, 12.95f, 0f);
+        cylinderThree.transform.Rotate(0f, -45f, 0f);
         //try rotating this
 
         // --- WALLS ---
@@ -53,12 +56,16 @@ public class buildScene : MonoBehaviour
         GameObject wallFive = BuildWall(firstFloor, "wallFive", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 2.5f);
         GameObject wallSix = BuildWall(firstFloor, "wallSix", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 0f);
         GameObject wallSeven = BuildWall(firstFloor, "wallSeven", new Vector3 (1.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -11.75f, 0f, 0f);
-        GameObject wallEight = BuildWall(firstFloorPlaneTwo, "wallEight", new Vector3 (1.5f, 3f, 1f), SideOne.right,  SideTwo.front, SideThree.nothing, 0.85f, 9f, 0f);
+        GameObject wallEight = BuildWall(firstFloorPlaneTwo, "wallEight", new Vector3 (1.5f, 3f, 1f), SideOne.right,  SideTwo.front, SideThree.nothing, 0.85f, 8.8f, 0f);
         GameObject wallNine = BuildWall(firstFloor, "wallNine", new Vector3(1f, 3f, 13f), SideOne.left,  SideTwo.front, SideThree.nothing, -13.25f, 0f, 0f);
         GameObject wallTen = BuildWall(firstFloor, "wallTen", new Vector3(10f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -3.25f, 13f, 0f);
         GameObject wallAboveCylinder = BuildWall(firstFloor, "wallAboveCylinder", new Vector3(0.5f, 0.5f, 13f), SideOne.left,  SideTwo.front, SideThree.above, -4f, 0f, 2.5f);
+        GameObject wallEleven = BuildWall(firstFloor, "wallEleven", new Vector3(3f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -0.9f, 14f, 0f);
+        GameObject wallTwelve = BuildWall(firstFloor, "wallTwelve", new Vector3(0.5f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 15.5f, 0f);
+        GameObject wallThirteen = BuildWall(firstFloor, "wallThirteen", new Vector3(3f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 22f, 0f);
         // Rotate 90° around Y relative to current rotation
         wallEight.transform.Rotate(0f, 45f, 0f);
+        wallEleven.transform.Rotate(0f, 45f,0);
 
     
     
@@ -363,7 +370,27 @@ void BuildDoor(GameObject floor, string doorName, Vector3 scale, SideOne sideOne
     pannelFour.transform.localScale = new Vector3(1f, 0.1f, 0.05f);
     pannelFour.transform.SetParent(door.transform);
     PlaceObject(door, pannelFour, SideOne.below, SideTwo.back, SideThree.nothing, -0.1f, -0.1f, 0f);
-}
+
+    //get the collider createPrimitive already creates 
+    BoxCollider solid = door.GetComponent<BoxCollider>();
+    solid.isTrigger = false;
+
+    //add a trigger to the door 
+    BoxCollider trigger = door.AddComponent<BoxCollider>();
+    trigger.isTrigger = true;
+
+    // Make the trigger a bit larger and pushed forward so it activates before the player hits the door.
+    trigger.size   = new Vector3(1.2f, 1.2f, 1.6f);  
+    trigger.center = new Vector3(0f, 0f, 0.3f);  
+
+    //link script for door trigger logic
+    doorTrigger script = door.AddComponent<doorTrigger>();
+    script.doorName = doorName;
+
+    //assign layer to the door 
+    door.layer = Layers.DoorTrigger;
+}   
+
 
 void BuildGlassPannel(GameObject floor, string pannelName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
                         float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset ){
@@ -438,7 +465,9 @@ GameObject CreateDefaultPlayer(Vector3 spawnPos)
     // Root object
     GameObject playerRoot = new GameObject("Player");
     playerRoot.transform.position = spawnPos;
-    
+    playerRoot.tag = "Player";
+    //assign layer 
+    playerRoot.layer = Layers.Player;
     // CharacterController
     var cc = playerRoot.AddComponent<CharacterController>();
     cc.height = 2f;

@@ -18,6 +18,11 @@ public class PlayerController : MonoBehaviour
         cc = GetComponent<CharacterController>();
         if (cameraPivot == null) cameraPivot = GetComponentInChildren<Camera>()?.transform;
 
+        //spawn character at a position 
+        cc.enabled = false;
+        transform.position = new Vector3(-24f, 0f, -20f); 
+        cc.enabled = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
