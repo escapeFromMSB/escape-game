@@ -1,55 +1,108 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    public int moveSpeed = 5;
-    public int gravity = -10;
-    public int jumpHeight = 1;
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed = 5f;       // m/s
+    [SerializeField] private float sprintMultiplier = 1.6f;
+    [SerializeField] private float airControl = 0.6f;    // 0..1
 
-    public int mouseSensitivity = 100;
-    public Transform cameraPivot; 
+    [Header("Jump & Gravity")]
+    [SerializeField] private float gravity = -9.81f;     // m/s^2 (negative down)
+    [SerializeField] private float jumpHeight = 1.25f;   // meters
+    [SerializeField] private float groundedStick = -2f;  // small downward bias when grounded
+    [SerializeField] private float coyoteTime = 0.08f;   // optional feel improvement
 
-    float yVelocity;
-    float xLook;  
-    CharacterController cc;
+    [Header("Look")]
+    [SerializeField] private float mouseSensitivity = 120f; // deg/s at 1.0 mouse input
+    [SerializeField] private Transform cameraPivot;      // head/camera holder
 
-    void Start()
+    [Header("Controller Tuning")]
+    [SerializeField] private float slopeLimit = 45f;
+    [SerializeField] private float stepOffset = 0.3f;
+    [SerializeField] private float skinWidth = 0.08f;
+
+	public Transform CameraPivot
+	{
+    	get => cameraPivot;
+    	set => cameraPivot = value;
+	}
+
+    private CharacterController cc;
+    private float yVelocity;
+    private float pitch;          // camera X rotation
+    private float lastGroundedTime;
+
+    void Awake()
     {
         cc = GetComponent<CharacterController>();
-        if (cameraPivot == null) cameraPivot = GetComponentInChildren<Camera>()?.transform;
+        if (!cameraPivot) cameraPivot = GetComponentInChildren<Camera>()?.transform;
 
-        //spawn character at a position 
-        cc.enabled = false;
-        transform.position = new Vector3(-24f, 0f, -20f); 
-        cc.enabled = true;
+        // Ensure controller has sensible values
+        cc.slopeLimit = slopeLimit;
+        cc.stepOffset = stepOffset;
+        cc.skinWidth  = skinWidth;
 
+        // Cursor lock for mouselook
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
+    void Start() {}
+
     void Update()
     {
-        // Mouse look
+        // --- Look ---
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
+        // yaw on body
         transform.Rotate(Vector3.up, mouseX);
-        xLook = Mathf.Clamp(xLook - mouseY, -85f, 85f);
-        if (cameraPivot) cameraPivot.localEulerAngles = new Vector3(xLook, 0f, 0f);
 
-        // Movement
+        // pitch on camera
+        pitch = Mathf.Clamp(pitch - mouseY, -85f, 85f);
+        if (cameraPivot)
+        {
+            var e = cameraPivot.localEulerAngles;
+            cameraPivot.localEulerAngles = new Vector3(pitch, 0f, 0f);
+        }
+
+        // --- Move input ---
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
-        Vector3 move = (transform.right * h + transform.forward * v) * moveSpeed;
+        Vector3 input = new Vector3(h, 0f, v);
+        if (input.sqrMagnitude > 1f) input.Normalize();
 
-        // Gravity & jump
-        if (cc.isGrounded && yVelocity < 0f) yVelocity = -2f; // keep grounded
-        if (cc.isGrounded && Input.GetButtonDown("Jump"))
+        // apply sprint
+        float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? sprintMultiplier : 1f);
+
+        // world/character space move (relative to facing)
+        Vector3 planar = (transform.right * input.x + transform.forward * input.z) * speed;
+
+        bool grounded = cc.isGrounded;
+        if (grounded) lastGroundedTime = Time.time;
+
+        // --- Jump / gravity ---
+        if (grounded && yVelocity < 0f) yVelocity = groundedStick;
+
+        // coyote time allows a small grace window after leaving ground
+        bool canJump = grounded || (Time.time - lastGroundedTime) <= coyoteTime;
+
+        if (canJump && Input.GetButtonDown("Jump"))
+        {
+            // v = sqrt(2 g h) with g negative -> -2f*gravity is positive
             yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
 
+        // gravity integration
         yVelocity += gravity * Time.deltaTime;
-        move.y = yVelocity;
 
-        cc.Move(move * Time.deltaTime);
+        // reduce air control
+        Vector3 finalPlanar = grounded ? planar : Vector3.Lerp(Vector3.zero, planar, airControl);
+        Vector3 velocity = new Vector3(finalPlanar.x, yVelocity, finalPlanar.z);
+
+        // --- Move controller ---
+        cc.Move(velocity * Time.deltaTime);
     }
 }

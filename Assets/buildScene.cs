@@ -71,10 +71,10 @@ public class buildScene : MonoBehaviour
     
 
         // --- DOORS ---
-        BuildDoor(firstFloor, "doorOne",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 0f, 0f);
-        BuildDoor(firstFloor, "doorTwo",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 0f, 0f);
-        BuildDoor(firstFloor, "doorThree",new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 2.9f, 0f);
-        BuildDoor(firstFloor, "doorFour", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 2.9f, 0f);
+        BuildDoor(firstFloor, "doorOne",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 0f, 0f,  hingeOnLeft: true,  openCW: false);
+        BuildDoor(firstFloor, "doorTwo",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 0f, 0f, hingeOnLeft: false, openCW: true);
+        BuildDoor(firstFloor, "doorThree",new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 2.9f, 0f,  hingeOnLeft: true,  openCW: false);
+        BuildDoor(firstFloor, "doorFour", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 2.9f, 0f, hingeOnLeft: false, openCW: true);
         // --- glass pannels besides doors ---
         BuildGlassPannel(firstFloor, "glassPannelOne", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -1f, 2.9f, 0f);
         BuildGlassPannel(firstFloor, "glassPannelTwo", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.5f, 2.9f, 0f); 
@@ -90,19 +90,14 @@ public class buildScene : MonoBehaviour
         BuildWindow(wallSix, "windowEight", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -4.25f, -0.05f, 0f);
         BuildWindow(wallFive, "windowNine", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -5.5f, -0.05f, 0f);
         BuildWindow(wallSix, "windowTen", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -5.5f, -0.05f, 0f);
-        // --- Aim the Main Camera so you can see everything ---
-        var cam = Camera.main;
-        if (cam != null)
-        {
-            cam.transform.position = new Vector3(0f, 25f, -35f);
-            cam.transform.LookAt(new Vector3(0f, 0f, 0f));
-        }
-        else
-        {
-            Debug.LogWarning("No Main Camera found. Create one (GameObject > Camera).");
-        }
+        SpawnPlayer(firstFloor, new Vector3(-24f, -20f)); 
         
-        SpawnPlayer(firstFloor, new Vector3(0f, 0f));
+        //puzzle cube
+        BuildPuzzleCube(firstFloor, "PuzzleCube_A", new Vector3(1.2f, 1.2f, 1.2f),
+            SideOne.left, SideTwo.front, SideThree.nothing,
+            -6.5f, 6.5f, 0f,
+            "PuzzleSample");
+
     }
 
     // Update is called once per frame
@@ -330,67 +325,87 @@ void addGlassMaterial(GameObject obj){
     rend.material = mat;
 }
 
+void BuildDoor(GameObject floor, string doorName, Vector3 scale,
+               SideOne sideOne, SideTwo sideTwo, SideThree sideThree,
+               float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset,
+               bool hingeOnLeft, bool openCW)
+{
+    // --- create the door (visual cube) ---
+    GameObject doorVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    doorVisual.name = doorName;
+    doorVisual.transform.localScale = scale;
 
-// BUILD FUNCTIONS 
-void BuildDoor(GameObject floor, string doorName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree,
-                float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
-    // --- create the door (main cube) ---
-    GameObject door = GameObject.CreatePrimitive(PrimitiveType.Cube);
-    door.name = doorName;
-    door.transform.localScale = scale;
+    // place the visual door on the plane (centered)
+    PlaceObjectOnPlane(floor, doorVisual, sideOne, sideTwo, sideThree,
+                       edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
 
-    // place on the plane
-    PlaceObjectOnPlane(floor, door, sideOne, sideTwo, sideThree, edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
+    addGlassMaterial(doorVisual);
 
-    // make it glass
-    addGlassMaterial(door);
+    // --- make a hinge pivot on the chosen edge ---
+    var rend = doorVisual.GetComponent<Renderer>();
+    float halfWidth = rend.bounds.extents.x; // assuming X is door width
+    float hingeSign = hingeOnLeft ? -1f : +1f;
 
-    // --- add door pannels ---
+    Vector3 hingePos = new Vector3(
+        doorVisual.transform.position.x + hingeSign * halfWidth,
+        doorVisual.transform.position.y,
+        doorVisual.transform.position.z
+    );
+
+    GameObject pivot = new GameObject(doorName + "_Pivot");
+    pivot.transform.position = hingePos;
+    pivot.transform.rotation = doorVisual.transform.rotation;
+
+    // parent the visual under the pivot (keeps world pose)
+    doorVisual.transform.SetParent(pivot.transform, worldPositionStays: true);
+
+    // ensure the visual blocks when closed
+    var blockingCol = doorVisual.GetComponent<Collider>();
+    blockingCol.enabled = true;
+
+    // add trigger & script to pivot
+    var trigger = pivot.AddComponent<BoxCollider>(); // set to trigger in Initialize
+    var auto    = pivot.AddComponent<DoorAutoOpen>();
+    auto.Initialize(doorVisual.transform, blockingCol, openCW); // <-- opposite settings per panel
+
+    // --- decorative panels (same as before) ---
     GameObject pannelOne = GameObject.CreatePrimitive(PrimitiveType.Cube);
     pannelOne.name = doorName + "PannelOne";
     pannelOne.transform.localScale = new Vector3(0.1f, 2f, 0.05f);
-    //make pannel a child of door 
-    pannelOne.transform.SetParent(door.transform);
-    PlaceObject(door, pannelOne, SideOne.left, SideTwo.back, SideThree.nothing, 0f, -0.1f, 0f);
+    pannelOne.transform.SetParent(doorVisual.transform);
+    PlaceObject(doorVisual, pannelOne, SideOne.left, SideTwo.back, SideThree.nothing, 0f, -0.1f, 0f);
 
     GameObject pannelTwo = GameObject.CreatePrimitive(PrimitiveType.Cube);
     pannelTwo.name = doorName + "PannelTwo";
     pannelTwo.transform.localScale = new Vector3(0.1f, 2f, 0.05f);
-    pannelTwo.transform.SetParent(door.transform);
-    PlaceObject(door, pannelTwo, SideOne.right, SideTwo.back, SideThree.nothing, 0f, -0.1f, 0f);
+    pannelTwo.transform.SetParent(doorVisual.transform);
+    PlaceObject(doorVisual, pannelTwo, SideOne.right, SideTwo.back, SideThree.nothing, 0f, -0.1f, 0f);
 
     GameObject pannelThree = GameObject.CreatePrimitive(PrimitiveType.Cube);
     pannelThree.name = doorName + "PannelThree";
     pannelThree.transform.localScale = new Vector3(1f, 0.1f, 0.05f);
-    pannelThree.transform.SetParent(door.transform);
-    PlaceObject(door, pannelThree, SideOne.above, SideTwo.back, SideThree.nothing, -0.1f, -0.1f, 0f);
+    pannelThree.transform.SetParent(doorVisual.transform);
+    PlaceObject(doorVisual, pannelThree, SideOne.above, SideTwo.back, SideThree.nothing, -0.1f, -0.1f, 0f);
 
     GameObject pannelFour = GameObject.CreatePrimitive(PrimitiveType.Cube);
     pannelFour.name = doorName + "PannelFour";
     pannelFour.transform.localScale = new Vector3(1f, 0.1f, 0.05f);
-    pannelFour.transform.SetParent(door.transform);
-    PlaceObject(door, pannelFour, SideOne.below, SideTwo.back, SideThree.nothing, -0.1f, -0.1f, 0f);
+    pannelFour.transform.SetParent(doorVisual.transform);
+    PlaceObject(doorVisual, pannelFour, SideOne.below, SideTwo.back, SideThree.nothing, -0.1f, -0.1f, 0f);
 
-    //get the collider createPrimitive already creates 
-    BoxCollider solid = door.GetComponent<BoxCollider>();
-    solid.isTrigger = false;
+    // make panels non-blocking so only the main door collider matters
+    DisableColliderIfAny(pannelOne);
+    DisableColliderIfAny(pannelTwo);
+    DisableColliderIfAny(pannelThree);
+    DisableColliderIfAny(pannelFour);
+}
 
-    //add a trigger to the door 
-    BoxCollider trigger = door.AddComponent<BoxCollider>();
-    trigger.isTrigger = true;
-
-    // Make the trigger a bit larger and pushed forward so it activates before the player hits the door.
-    trigger.size   = new Vector3(1.2f, 1.2f, 1.6f);  
-    trigger.center = new Vector3(0f, 0f, 0.3f);  
-
-    //link script for door trigger logic
-    doorTrigger script = door.AddComponent<doorTrigger>();
-    script.doorName = doorName;
-
-    //assign layer to the door 
-    door.layer = Layers.DoorTrigger;
-}   
-
+void DisableColliderIfAny(GameObject go)
+{
+    var col = go.GetComponent<Collider>();
+    if (col) col.enabled = false;
+}
+  
 
 void BuildGlassPannel(GameObject floor, string pannelName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
                         float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset ){
@@ -413,6 +428,26 @@ GameObject BuildWall(GameObject floor, string wallName, Vector3 scale, SideOne s
     PlaceObjectOnPlane(floor, wall, sideOne, sideTwo, sideThree, edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
     return wall;
 }
+
+GameObject BuildPuzzleCube(GameObject floor, string name, Vector3 localScale,
+    SideOne sideOne, SideTwo sideTwo, SideThree sideThree,
+    float off1, float off2, float off3,
+    string puzzleSceneName)
+{
+    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    cube.name = name;
+    cube.transform.localScale = localScale;
+
+    PlaceObjectOnPlane(floor, cube, sideOne, sideTwo, sideThree, off1, off2, off3);
+
+    addMaterial(cube, new Color(0.2f, 0.5f, 1f));
+
+    var inter = cube.AddComponent<InteractablePuzzle>();
+    inter.Configure(puzzleSceneName, cube.transform);
+    
+    return cube;
+}
+
 
 GameObject BuildCylinder(GameObject floor, string cylinderName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
                         float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
@@ -462,31 +497,45 @@ void BuildWindow(GameObject anchorObj, string windowName, Vector3 scale, SideOne
 
 GameObject CreateDefaultPlayer(Vector3 spawnPos)
 {
-    // Root object
+    // Root
     GameObject playerRoot = new GameObject("Player");
     playerRoot.transform.position = spawnPos;
-    playerRoot.tag = "Player";
-    //assign layer 
-    playerRoot.layer = Layers.Player;
+
     // CharacterController
     var cc = playerRoot.AddComponent<CharacterController>();
     cc.height = 2f;
     cc.radius = 0.4f;
     cc.center = new Vector3(0f, 1f, 0f);
 
-    // Camera
-    GameObject camGO = new GameObject("PlayerCamera");
-    camGO.tag = "MainCamera"; // make it the main camera
-    camGO.AddComponent<Camera>();
-    camGO.transform.SetParent(playerRoot.transform, worldPositionStays: false);
-    camGO.transform.localPosition = new Vector3(0f, 1.6f, 0f);
+    // Camera: reuse MainCamera if it exists; otherwise create one
+    Camera existing = Camera.main;
+    GameObject camGO;
+    if (existing != null)
+    {
+        camGO = existing.gameObject;
+        // Ensure it has the right tag and component
+        camGO.tag = "MainCamera";
+        // Parent it under the player and place at head height
+        camGO.transform.SetParent(playerRoot.transform, worldPositionStays: false);
+        camGO.transform.localPosition = new Vector3(0f, 1.6f, 0f);
+        camGO.transform.localRotation = Quaternion.identity;
+    }
+    else
+    {
+        camGO = new GameObject("PlayerCamera");
+        camGO.tag = "MainCamera";
+        camGO.AddComponent<Camera>();
+        camGO.transform.SetParent(playerRoot.transform, worldPositionStays: false);
+        camGO.transform.localPosition = new Vector3(0f, 1.6f, 0f);
+    }
 
-    // Controller
+    // Controller (you'll paste your PlayerController next)
     var controller = playerRoot.AddComponent<PlayerController>();
-    controller.cameraPivot = camGO.transform;
+    controller.CameraPivot = camGO.transform;
 
     return playerRoot;
 }
+
 
 void SpawnPlayer(GameObject floor, Vector3 offsetXZ)
 {
