@@ -44,6 +44,7 @@ public class buildScene : MonoBehaviour
         cylinderTwo.transform.Rotate(0f, -45f, 0f);
         GameObject cylinderThree = BuildCylinder(firstFloor, "cylinderThree", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -3f, 12.95f, 0f);
         cylinderThree.transform.Rotate(0f, -45f, 0f);
+        GameObject cylinderFour = BuildCylinder(firstFloor, "cylinderFour", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.9f, 15.15f, 0f);
         //try rotating this
 
         // --- WALLS ---
@@ -62,34 +63,58 @@ public class buildScene : MonoBehaviour
         GameObject wallAboveCylinder = BuildWall(firstFloor, "wallAboveCylinder", new Vector3(0.5f, 0.5f, 13f), SideOne.left,  SideTwo.front, SideThree.above, -4f, 0f, 2.5f);
         GameObject wallEleven = BuildWall(firstFloor, "wallEleven", new Vector3(3f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -0.9f, 14f, 0f);
         GameObject wallTwelve = BuildWall(firstFloor, "wallTwelve", new Vector3(0.5f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 15.5f, 0f);
-        GameObject wallThirteen = BuildWall(firstFloor, "wallThirteen", new Vector3(3f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 22f, 0f);
+        GameObject wallThirteen = BuildWall(firstFloor, "wallThirteen", new Vector3(1f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 21f, 0f);
+        //walls for back windows
+        GameObject wallFifteen = BuildWall(firstFloor, "wallFifteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, 2.5f, 21f, 2.5f);
+        GameObject wallSixteen = BuildWall(firstFloor, "wallSixteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, 2.5f, 21f, 0f);
+
+        GameObject wallSeventeen = BuildWall(firstFloor, "wallSeventeen", new Vector3(1f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 21f, 0f);
+        //walls near elevator 
+        GameObject wallEighteen = BuildWall(firstFloor, "wallEighteen", new Vector3(0.5f, 3f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 19f, 0f);
+        GameObject wallNineteen = BuildWall(firstFloor, "wallNineteen", new Vector3(0.5f, 3f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 15f, 0f);
         // Rotate 90° around Y relative to current rotation
         wallEight.transform.Rotate(0f, 45f, 0f);
-        wallEleven.transform.Rotate(0f, 45f,0);
-
-    
+        wallEleven.transform.Rotate(0f, 45f, 0f);
     
 
         // --- DOORS ---
         BuildDoor(firstFloor, "doorOne",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 0f, 0f,  hingeOnLeft: true,  openCW: false);
         BuildDoor(firstFloor, "doorTwo",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 0f, 0f, hingeOnLeft: false, openCW: true);
-        BuildDoor(firstFloor, "doorThree",new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 2.9f, 0f,  hingeOnLeft: true,  openCW: false);
+        BuildDoor(firstFloor, "doorThree", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 2.9f, 0f,  hingeOnLeft: true,  openCW: false);
         BuildDoor(firstFloor, "doorFour", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 2.9f, 0f, hingeOnLeft: false, openCW: true);
         // --- glass pannels besides doors ---
         BuildGlassPannel(firstFloor, "glassPannelOne", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -1f, 2.9f, 0f);
         BuildGlassPannel(firstFloor, "glassPannelTwo", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.5f, 2.9f, 0f); 
+        // -- elevator doors -- 
+        Transform leftDoor = BuildElevatorDoor(firstFloor, "elevatorDoorOne", new Vector3 (0.1f, 2f, 1), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 18f, 0f, null);
+        Transform rightDoor = BuildElevatorDoor(firstFloor, "elevatorDoorOne", new Vector3 (0.1f, 2f, 1), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 17f, 0f, leftDoor);
 
-        // --- windows ---
-        BuildWindow(wallFive, "windowOne", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -0.5f, -0.05f, 0f);
-        BuildWindow(wallSix, "windowTwo", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -0.5f, -0.05f, 0f);
-        BuildWindow(wallFive, "windowThree", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -1.75f, -0.05f, 0f);
-        BuildWindow(wallSix, "windowFour", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -1.75f, -0.05f, 0f);
-        BuildWindow(wallFive, "windowFive", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -3f, -0.05f, 0f);
-        BuildWindow(wallSix, "windowSix", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -3f, -0.05f, 0f);
-        BuildWindow(wallFive, "windowSeven", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -4.25f, -0.05f, 0f);
-        BuildWindow(wallSix, "windowEight", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -4.25f, -0.05f, 0f);
-        BuildWindow(wallFive, "windowNine", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -5.5f, -0.05f, 0f);
-        BuildWindow(wallSix, "windowTen", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -5.5f, -0.05f, 0f);
+
+        // --- front windows ---
+        GameObject windowOne = BuildWindow(wallFive, "windowOne", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -0.5f, -0.05f, 0f);
+        GameObject windowTwo = BuildWindow(wallSix, "windowTwo", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -0.5f, -0.05f, 0f);
+        GameObject windowThree = BuildWindow(wallFive, "windowThree", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -1.75f, -0.05f, 0f);
+        GameObject windowFour = BuildWindow(wallSix, "windowFour", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -1.75f, -0.05f, 0f);
+        GameObject windowFive = BuildWindow(wallFive, "windowFive", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -3f, -0.05f, 0f);
+        GameObject windowSix = BuildWindow(wallSix, "windowSix", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -3f, -0.05f, 0f);
+        GameObject windowSeven = BuildWindow(wallFive, "windowSeven", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -4.25f, -0.05f, 0f);
+        GameObject windowEight = BuildWindow(wallSix, "windowEight", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -4.25f, -0.05f, 0f);
+        GameObject windowNine = BuildWindow(wallFive, "windowNine", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -5.5f, -0.05f, 0f);
+        GameObject windowTen = BuildWindow(wallSix, "windowTen", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.above, -5.5f, -0.05f, 0f);
+        // --- back windows --
+        GameObject windowEleven = BuildWindow(wallFifteen, "windowEleven", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.below, -0.25f, -0.05f, 0f);
+        GameObject windowTwelve = BuildWindow(wallSixteen, "windowTwelve", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.above, -0.25f, -0.05f, 0f);
+        GameObject windowThirteen = BuildWindow(wallFifteen, "windowThirteen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.below, -1.5f, -0.05f, 0f);
+        GameObject windowFourteen = BuildWindow(wallSixteen, "windowFourteen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.above, -1.5f, -0.05f, 0f);
+
+        windowEleven.transform.Rotate(0f, 180f, 0f);
+        windowTwelve.transform.Rotate(0f, 180f, 0f);
+        windowThirteen.transform.Rotate(0f, 180f, 0f);
+        windowFourteen.transform.Rotate(0f, 180f, 0f);
+
+     
+
+
         SpawnPlayer(firstFloor, new Vector3(-24f, -20f)); 
         
         //puzzle cube
@@ -459,7 +484,7 @@ GameObject BuildCylinder(GameObject floor, string cylinderName, Vector3 scale, S
     }
 
 
-void BuildWindow(GameObject anchorObj, string windowName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
+GameObject BuildWindow(GameObject anchorObj, string windowName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
                 float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
     GameObject window = GameObject.CreatePrimitive(PrimitiveType.Cube);
     window.name = windowName;
@@ -492,8 +517,50 @@ void BuildWindow(GameObject anchorObj, string windowName, Vector3 scale, SideOne
     windowPannelFour.transform.localScale = new Vector3(1.25f, 0.1f, 0.05f);
     windowPannelFour.transform.SetParent(window.transform);
     PlaceObject(window, windowPannelFour, SideOne.below, SideTwo.back, SideThree.nothing, -0.1f, -0.1f, 0f);
+
+    return window;
 }
 
+Transform BuildElevatorDoor(GameObject floor, string doorName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset, Transform counterpartDoor){
+ // --- create the door (visual cube) ---
+    GameObject doorVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    doorVisual.name = doorName;
+    doorVisual.transform.localScale = scale;
+
+    // place the visual door on the plane (centered)
+    PlaceObjectOnPlane(floor, doorVisual, sideOne, sideTwo, sideThree,
+                       edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
+
+    //temp material. will be changed later. 
+    addGlassMaterial(doorVisual);
+
+
+    // --- create sensor (child) for trigger events ---
+    GameObject sensor = new GameObject(doorName + "_Sensor");
+    sensor.transform.SetParent(doorVisual.transform, worldPositionStays: true);
+    sensor.transform.position = doorVisual.transform.position; // align with door
+
+    // Trigger collider (make it a bit larger than the doorway)
+    var trig = sensor.AddComponent<BoxCollider>();
+    trig.isTrigger = true;
+    trig.size = doorVisual.transform.localScale + new Vector3(1.0f, 1.0f, 1.0f); // expand as needed
+
+    // Rigidbody required for trigger callbacks
+    var rb = sensor.AddComponent<Rigidbody>();
+    rb.isKinematic = true;
+    rb.useGravity = false;
+
+    // Door controller on sensor; tell it which transform to move
+    // this is where the script is called. 
+    // Door controller on sensor; tell it which transform to move
+    var controller = sensor.AddComponent<ElevatorDoor>();
+    controller.doorTarget = doorVisual.transform;
+    controller.counterpartDoor = counterpartDoor; 
+
+    return doorVisual.transform;
+
+
+}
 
 GameObject CreateDefaultPlayer(Vector3 spawnPos)
 {
