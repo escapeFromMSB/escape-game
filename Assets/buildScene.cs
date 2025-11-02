@@ -22,15 +22,26 @@ public class buildScene : MonoBehaviour
         // createPrimitive creates a 3D object 
         GameObject firstFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
         firstFloor.name = "firstFloor";
+        GameObject secondFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        secondFloor.name = "secondFloor";
+
+        // underside
+        var underside = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        underside.name = "secondFloor_Underside";
+        underside.transform.SetParent(secondFloor.transform, false);
+        underside.transform.localRotation = Quaternion.Euler(180f, 0f, 0f);
+        underside.transform.localScale    = Vector3.one;
 
         // set the position
         // vector3 means 3 coordinates
         firstFloor.transform.position = new Vector3 (0,0,0);
+        secondFloor.transform.position = new Vector3 (0, 3f ,0);
 
         // set scale to normal scale 
         // f means float. needs to be float and not double due to performance because float is faster
         // *** in unity, 1 unit = 1 meter. the scale (1,1,1) is 10x10 by default (for a plane it isx and z axis). ***
         firstFloor.transform.localScale = new Vector3 (5f,1f,5f); //plane is 50x50
+        secondFloor.transform.localScale = new Vector3 (5f,1f,5f); //plane is 50x50
 
         //another first floor plane 
         GameObject firstFloorPlaneTwo = GameObject.CreatePrimitive(PrimitiveType.Plane);
@@ -68,10 +79,13 @@ public class buildScene : MonoBehaviour
         GameObject wallFifteen = BuildWall(firstFloor, "wallFifteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, 2.5f, 21f, 2.5f);
         GameObject wallSixteen = BuildWall(firstFloor, "wallSixteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, 2.5f, 21f, 0f);
 
-        GameObject wallSeventeen = BuildWall(firstFloor, "wallSeventeen", new Vector3(1f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 21f, 0f);
+        GameObject wallSeventeen = BuildWall(firstFloor, "wallSeventeen", new Vector3(1f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 21f, 0f);
         //walls near elevator 
-        GameObject wallEighteen = BuildWall(firstFloor, "wallEighteen", new Vector3(0.5f, 3f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 19f, 0f);
-        GameObject wallNineteen = BuildWall(firstFloor, "wallNineteen", new Vector3(0.5f, 3f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 15f, 0f);
+        GameObject wallEighteen = BuildWall(firstFloor, "wallEighteen", new Vector3(0.5f, 7f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 19f, 0f);
+        GameObject wallNineteen = BuildWall(firstFloor, "wallNineteen", new Vector3(0.5f, 7f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 15f, 0f);
+        GameObject wallTwenty = BuildWall(firstFloor, "wallTwenty", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 16.5f, 0f);
+        GameObject wallTwentyOne = BuildWall(firstFloor, "wallTwentyOne", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 19f, 0f);
+        GameObject wallTwentyTwo = BuildWall(firstFloor, "wallTwentyTwo", new Vector3(0.5f, 7f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 17f, 0f);
         // Rotate 90° around Y relative to current rotation
         wallEight.transform.Rotate(0f, 45f, 0f);
         wallEleven.transform.Rotate(0f, 45f, 0f);
