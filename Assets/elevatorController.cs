@@ -6,9 +6,8 @@ public class ElevatorController : MonoBehaviour
 {
     public Transform platformTarget;
 
-    [SerializeField] private float travelHeight = 4f;
     [SerializeField] private float speed = 1.5f;
-    [SerializeField] private string playerTag = "Player";
+    [SerializeField] private string playerTag = "";
 
     [SerializeField] private Vector3 startPos;
     [SerializeField] private Vector3 endPos;
@@ -20,22 +19,23 @@ public class ElevatorController : MonoBehaviour
     {
         if (platformTarget == null)
         {
-            platformTarget = transform; // fallback so it still moves SOMETHING
+            platformTarget = transform;
             Debug.LogWarning("[Elevator] platformTarget not set; using this.transform");
         }
 
         startPos = platformTarget.position;
-        endPos   = startPos + new Vector3(0f, Mathf.Abs(travelHeight), 0f);
-
-        Rigidbody rb = GetComponent<Rigidbody>();
-        BoxCollider trigger = GetComponent<BoxCollider>();
+        endPos = startPos + new Vector3(0f, -3f, 0f);
 
         var col = GetComponent<Collider>();
-        if (col == null) Debug.LogError("[Elevator] No Collider on this object. Add a BoxCollider and check Is Trigger.");
-        else if (!col.isTrigger) Debug.LogWarning("[Elevator] Collider exists but Is Trigger is OFF. Turn it ON for OnTriggerEnter to fire.");
+        if (col == null)
+            Debug.LogError("[Elevator] No Collider on this object. Add a BoxCollider and check Is Trigger.");
+        else if (!col.isTrigger)
+            Debug.LogWarning("[Elevator] Collider exists but Is Trigger is OFF. Turn it ON for OnTriggerEnter to fire.");
 
-        if (speed <= 0f) Debug.LogWarning("[Elevator] Speed <= 0. Set a positive speed.");
-        if (Vector3.Distance(startPos, endPos) < 0.0001f) Debug.LogWarning("[Elevator] startPos == endPos. Increase travelHeight.");
+        if (speed <= 0f)
+            Debug.LogWarning("[Elevator] Speed <= 0. Set a positive speed.");
+
+        Debug.Log($"[Elevator] Start initialized. StartPos={startPos}, EndPos={endPos}");
     }
 
     void Update()
@@ -54,31 +54,46 @@ public class ElevatorController : MonoBehaviour
 
     private bool IsPlayer(Collider other)
     {
-        if (!string.IsNullOrEmpty(playerTag)) return other.CompareTag(playerTag);
-        return other.GetComponent<CharacterController>() != null || other.attachedRigidbody != null;
+
+        if (!string.IsNullOrEmpty(playerTag))
+            return other.CompareTag(playerTag);
+
+        // Fallback: accept anything with a CharacterController
+        return other.GetComponent<CharacterController>() != null;
+
+        bool hasCC = other.GetComponent<CharacterController>() != null;
+        bool hasRB = other.attachedRigidbody != null;
+        Debug.Log($"[Elevator] Checking collider '{other.name}': CC={hasCC}, RB={hasRB}");
+        return hasCC || hasRB;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (!IsPlayer(other)) return;
+        Debug.Log($"[Elevator] OnTriggerEnter called by '{other.name}'");
 
-        // decide direction based on where we are
+        if (!IsPlayer(other))
+        {
+            Debug.Log("[Elevator] Collider was NOT a player, ignoring.");
+            return;
+        }
+
         float dTop = Vector3.Distance(platformTarget.position, endPos);
         float dBot = Vector3.Distance(platformTarget.position, startPos);
         goingUp = dTop > dBot;
 
         moving = true;
-        Debug.Log("[Elevator] Triggered: moving " + (goingUp ? "UP" : "DOWN"));
+        Debug.Log($"[Elevator] Triggered by '{other.name}' → moving {(goingUp ? "UP" : "DOWN")}");
+        if (IsAtBottom())
+        {
+            Debug.Log("[Elevator] Currently on FIRST floor.");
+        }
+        else if (IsAtTop())
+        {
+            Debug.Log("[Elevator] Currently on SECOND floor.");
+        }
+
+
     }
 
-    // DEBUG: press Space to move without a trigger (helps test)
-    void OnGUI()
-    {
-        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Space)
-        {
-            goingUp = !goingUp;
-            moving = true;
-            Debug.Log("[Elevator] SPACE pressed: toggling direction to " + (goingUp ? "UP" : "DOWN"));
-        }
-    }
+
 }

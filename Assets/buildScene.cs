@@ -72,7 +72,7 @@ public class buildScene : MonoBehaviour
         underside2.transform.localScale    = Vector3.one;
 
          // elevator platform 
-        Transform elevatorPlaform = BuildElevatorPlatform(firstFloor, "elevatorPlatform", new Vector3 (2f, 0.1f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 17f, 0f);
+        Transform elevatorPlaform = BuildElevatorPlatform(firstFloor, "elevatorPlatform", new Vector3 (2f, 0.1f, 2f), SideOne.left,  SideTwo.front, SideThree.above, 5.5f, 17f, 3.1f);
 
         //cylinder
         GameObject cylinderOne = BuildCylinder(firstFloor, "cylinderOne", new Vector3(1.25f, 1.5f, 1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.75f, 8f, 0f, customMint);
