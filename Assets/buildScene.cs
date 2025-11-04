@@ -30,6 +30,7 @@ public class buildScene : MonoBehaviour
         GameObject secondFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
         secondFloor.name = "secondFloor";
         ApplySpeckledTexture(firstFloor);
+        ApplySpeckledTexture(secondFloor);
        
 
         // underside
@@ -42,7 +43,7 @@ public class buildScene : MonoBehaviour
         // set the position
         // vector3 means 3 coordinates
         firstFloor.transform.position = new Vector3 (0,0,0);
-        secondFloor.transform.position = new Vector3 (0, 3f ,0);
+        secondFloor.transform.position = new Vector3 (-3.25f, 3.05f ,-3.25f);
 
         // set scale to normal scale 
         // f means float. needs to be float and not double due to performance because float is faster
@@ -55,7 +56,20 @@ public class buildScene : MonoBehaviour
         firstFloorPlaneTwo.name = "firstFloorPlaneTwo";
         firstFloorPlaneTwo.transform.position = new Vector3 (-50,0,0);
         firstFloorPlaneTwo.transform.localScale = new Vector3 (5f,1f,5f);
-         ApplySpeckledTexture(firstFloorPlaneTwo);
+        ApplySpeckledTexture(firstFloorPlaneTwo);
+
+        //second floor ceiling
+        GameObject roof = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        roof.name = "firstFloorPlaneTwo";
+        roof.transform.position = new Vector3 (-3.25f, 6.05f, 6.75f);
+        roof.transform.localScale = new Vector3 (5f,1f,5f);
+
+        // underside
+        var underside2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        underside2.name = "secondFloor_Underside";
+        underside2.transform.SetParent(roof.transform, false);
+        underside2.transform.localRotation = Quaternion.Euler(180f, 0f, 0f);
+        underside2.transform.localScale    = Vector3.one;
 
          // elevator platform 
         Transform elevatorPlaform = BuildElevatorPlatform(firstFloor, "elevatorPlatform", new Vector3 (2f, 0.1f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 17f, 0f);
@@ -96,18 +110,37 @@ public class buildScene : MonoBehaviour
         GameObject wallNineteen = BuildWall(firstFloor, "wallNineteen", new Vector3(0.5f, 7f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 15f, 0f, customWhite);
         GameObject wallTwenty = BuildWall(firstFloor, "wallTwenty", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 16.5f, 0f, customWhite);
         GameObject wallTwentyOne = BuildWall(firstFloor, "wallTwentyOne", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 19f, 0f, customWhite);
-        GameObject wallTwentyTwo = BuildWall(firstFloor, "wallTwentyTwo", new Vector3(0.5f, 7f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 17f, 0f, customWhite);
+        GameObject wallTwentyTwo = BuildWall(firstFloor, "wallTwentyTwo", new Vector3(0.5f, 7f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.75f, 17f, 0f, customWhite);
         // Rotate 90° around Y relative to current rotation
         wallEight.transform.Rotate(0f, 45f, 0f);
         wallEleven.transform.Rotate(0f, 45f, 0f);
 
 
+        //--- SECOND FLOOR WALLS ---
+        GameObject wallTwentyFour = BuildWall(secondFloor, "wallTwentyFour", new Vector3(0.25f, 3f, 8.25f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 10.0f, 0f, customMint);
+        //walls for back windows on second floor
+        GameObject wallTwentyFive = BuildWall(secondFloor, "wallTwentyFive", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -0.75f, 24.25f, 2.5f, customWhite);
+        GameObject wallTwentySix = BuildWall(secondFloor, "wallTwentySix", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -0.75f, 24.25f, 0f, customWhite);
 
+        GameObject wallTwentySeven = BuildWall(secondFloor, "wallTwentySeven", new Vector3(1f, 3f, 0.25f), SideOne.left,  SideTwo.front, SideThree.nothing, -3.25f, 24.25f, 0f, customWhite);
+        GameObject wallTwentyEight = BuildWall(secondFloor, "wallTwentyEight", new Vector3(0.25f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, -4.25f, 18.25f, 0f, customMint);
+        GameObject wallTwentyNine = BuildWall(secondFloor, "wallTwentyNine", new Vector3(0.5f, 3f, 0.25f), SideOne.left,  SideTwo.front, SideThree.nothing, -4.5f, 18.25f, 0f, customMint);
+        GameObject wallThirty = BuildWall(secondFloor, "wallThirty", new Vector3(0.25f, 3f, 8.25f), SideOne.left,  SideTwo.front, SideThree.nothing, -5f, 10f, 0f, customWhite);
+        //back walls
+        GameObject wallThirtyOne = BuildWall(secondFloor, "wallThirtyOne", new Vector3(10f, 6f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.25f, 10f, 0f, customMint);
+        GameObject wallThirtyTwo = BuildWall(secondFloor, "wallThirtyTwo", new Vector3(2f, 1f, 0.1f), SideOne.left,  SideTwo.front, SideThree.above, 0.25f, 10f, 2.5f, customMint);
+        //MSB 228
+        GameObject wallTwentyThree = BuildWall(secondFloor, "wallTwentyThree", new Vector3(0.25f, 6f, 10f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f, customWhite);
+        GameObject wallThirtyFour = BuildWall(secondFloor, "wallThirtyFour", new Vector3(15f, 6f, 0.25f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f, customWhite);
+        GameObject wallThirtyFive = BuildWall(secondFloor, "wallThirtyFive", new Vector3(15f, 6f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.25f, 9.9f, 0f, customWhite);
+        GameObject wallThirtySix = BuildWall(secondFloor, "wallThirtySix", new Vector3(0.1f, 6f, 15f), SideOne.left,  SideTwo.front, SideThree.nothing, -15f, 0f, 0f, customWhite);
         // --- DOORS ---
         BuildDoor(firstFloor, "doorOne",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 0f, 0f,  hingeOnLeft: true,  openCW: false);
         BuildDoor(firstFloor, "doorTwo",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 0f, 0f, hingeOnLeft: false, openCW: true);
         BuildDoor(firstFloor, "doorThree", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 2.9f, 0f,  hingeOnLeft: true,  openCW: false);
         BuildDoor(firstFloor, "doorFour", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -2.5f, 2.9f, 0f, hingeOnLeft: false, openCW: true);
+        // door to MSB 228
+        BuildDoor(secondFloor, "doorFive", new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -0.25f, 10f, 0f, hingeOnLeft: false, openCW: true);
         // --- glass pannels besides doors ---
         BuildGlassPannel(firstFloor, "glassPannelOne", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -1f, 2.9f, 0f);
         BuildGlassPannel(firstFloor, "glassPannelTwo", new Vector3 (0.5f, 2f, 0.1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.5f, 2.9f, 0f); 
@@ -133,10 +166,22 @@ public class buildScene : MonoBehaviour
         GameObject windowThirteen = BuildWindow(wallFifteen, "windowThirteen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.below, -1.5f, -0.05f, 0f);
         GameObject windowFourteen = BuildWindow(wallSixteen, "windowFourteen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.above, -1.5f, -0.05f, 0f);
 
+        // --- back windows second floor--
+        GameObject windowFifteen = BuildWindow(wallTwentyFive, "windowFifteen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.below, -0.25f, -0.05f, 0f);
+        GameObject windowSixteen = BuildWindow(wallTwentySix, "windowSixteen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.above, -0.25f, -0.05f, 0f);
+        GameObject windowSeventeen = BuildWindow(wallTwentyFive, "windowSeventeen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.below, -1.5f, -0.05f, 0f);
+        GameObject windowEighteen = BuildWindow(wallTwentySix, "windowEighteen", new Vector3 (1.25f, 1f, 0.1f), SideOne.right, SideTwo.back, SideThree.above, -1.5f, -0.05f, 0f);
+
         windowEleven.transform.Rotate(0f, 180f, 0f);
         windowTwelve.transform.Rotate(0f, 180f, 0f);
         windowThirteen.transform.Rotate(0f, 180f, 0f);
         windowFourteen.transform.Rotate(0f, 180f, 0f);
+
+        
+        windowFifteen.transform.Rotate(0f, 180f, 0f);
+        windowSixteen.transform.Rotate(0f, 180f, 0f);
+        windowSeventeen.transform.Rotate(0f, 180f, 0f);
+        windowEighteen.transform.Rotate(0f, 180f, 0f);
 
      
 
@@ -579,9 +624,6 @@ Transform BuildElevatorDoor(GameObject floor, string doorName, Vector3 scale, Si
     rb.isKinematic = true;
     rb.useGravity = false;
 
-    // Door controller on sensor; tell it which transform to move
-    // this is where the script is called. 
-    // Door controller on sensor; tell it which transform to move
     var controller = sensor.AddComponent<ElevatorDoor>();
     controller.doorTarget = doorVisual.transform;
     controller.counterpartDoor = counterpartDoor; 
@@ -602,8 +644,8 @@ SideThree sideThree, float edgeOneOffset, float edgeTwoOffset, float edgeThreeOf
 
     // --- create sensor (child) for trigger events ---
     GameObject sensor = new GameObject(platformName + "_Sensor");
-    sensor.transform.SetParent(elevatorPlatform.transform, worldPositionStays: true);
-    sensor.transform.position = elevatorPlatform.transform.position; 
+    sensor.transform.SetParent(elevatorPlatform.transform);
+    sensor.transform.position = elevatorPlatform.transform.position + new Vector3(1.0f, 1.0f, 1.0f); 
 
     // Trigger collider 
     var trig = sensor.AddComponent<BoxCollider>();
@@ -615,9 +657,6 @@ SideThree sideThree, float edgeOneOffset, float edgeTwoOffset, float edgeThreeOf
     rb.isKinematic = true;
     rb.useGravity = false;
 
-    // Door controller on sensor; tell it which transform to move
-    // this is where the script is called. 
-    // Door controller on sensor; tell it which transform to move
     var controller = sensor.AddComponent<ElevatorController>();
     controller.platformTarget = elevatorPlatform.transform;
 
@@ -672,7 +711,7 @@ void SpawnPlayer(GameObject floor, Vector3 offsetXZ)
     // Put the player a little above the floor so it settles
     var rend = floor.GetComponent<Renderer>();
     float topY = rend ? rend.bounds.max.y : floor.transform.position.y;
-    Vector3 spawn = new Vector3(offsetXZ.x, topY + 0.2f, offsetXZ.y);
+    Vector3 spawn = new Vector3(offsetXZ.x, topY + 3.1f, offsetXZ.y);
     CreateDefaultPlayer(spawn);
 }
 
