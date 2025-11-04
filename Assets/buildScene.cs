@@ -18,12 +18,19 @@ public class buildScene : MonoBehaviour
         float sideTwoOffset = 0f;
         float edgeThreeOffset = 0f;
 
+        Color customBlue = new Color(70f / 255f, 130f / 255f, 180f / 255f);
+        Color customWhite = new Color(255f / 255f, 255f / 255f, 255f / 255f);
+        Color customMint = new Color(153f / 255f, 237f / 255f, 195f / 255f);
+
+
         //--- create the  first floor (plane) ---
         // createPrimitive creates a 3D object 
         GameObject firstFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
         firstFloor.name = "firstFloor";
         GameObject secondFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
         secondFloor.name = "secondFloor";
+        ApplySpeckledTexture(firstFloor);
+       
 
         // underside
         var underside = GameObject.CreatePrimitive(PrimitiveType.Plane);
@@ -48,48 +55,53 @@ public class buildScene : MonoBehaviour
         firstFloorPlaneTwo.name = "firstFloorPlaneTwo";
         firstFloorPlaneTwo.transform.position = new Vector3 (-50,0,0);
         firstFloorPlaneTwo.transform.localScale = new Vector3 (5f,1f,5f);
+         ApplySpeckledTexture(firstFloorPlaneTwo);
+
+         // elevator platform 
+        Transform elevatorPlaform = BuildElevatorPlatform(firstFloor, "elevatorPlatform", new Vector3 (2f, 0.1f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 17f, 0f);
 
         //cylinder
-        GameObject cylinderOne = BuildCylinder(firstFloor, "cylinderOne", new Vector3(1.25f, 1.5f, 1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.75f, 8f, 0f);
-        GameObject cylinderTwo = BuildCylinder(firstFloor, "cylinderTwo", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.68f, 8.9f, 0f);
+        GameObject cylinderOne = BuildCylinder(firstFloor, "cylinderOne", new Vector3(1.25f, 1.5f, 1f), SideOne.left, SideTwo.front, SideThree.nothing, -3.75f, 8f, 0f, customMint);
+        GameObject cylinderTwo = BuildCylinder(firstFloor, "cylinderTwo", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.68f, 8.9f, 0f, customBlue);
         cylinderTwo.transform.Rotate(0f, -45f, 0f);
-        GameObject cylinderThree = BuildCylinder(firstFloor, "cylinderThree", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -3f, 12.95f, 0f);
+        GameObject cylinderThree = BuildCylinder(firstFloor, "cylinderThree", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -3f, 12.95f, 0f, customWhite);
         cylinderThree.transform.Rotate(0f, -45f, 0f);
-        GameObject cylinderFour = BuildCylinder(firstFloor, "cylinderFour", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.9f, 15.15f, 0f);
+        GameObject cylinderFour = BuildCylinder(firstFloor, "cylinderFour", new Vector3(0.25f, 1.5f, 0.5f), SideOne.left, SideTwo.front, SideThree.nothing, -0.9f, 15.15f, 0f, customWhite);
         //try rotating this
 
         // --- WALLS ---
-        GameObject wallOne = BuildWall(firstFloor, "wallOne", new Vector3(1f, 3f, 9f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f);
-        GameObject wallTwo = BuildWall(firstFloor, "wallTwo", new Vector3 (0.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -5f, 0f, 0f);
-        GameObject wallThree = BuildWall(firstFloor, "wallThree", new Vector3 (1f, 3f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, -4f, 0f, 0f);
-        GameObject wallOneBesideDoorTwo = BuildWall(firstFloor, "wallOneBesideDoorTwo", new Vector3 (0.5f, 3f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 0f, 0f);
-        GameObject wallTwoBesideDoorTwo = BuildWall(firstFloor, "wallTwoBesideDoorTwo", new Vector3 (0.5f, 3f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -3.5f, 0f, 0f);
-        GameObject wallFour = BuildWall(firstFloor, "wallFour", new Vector3(1f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f);
-        GameObject wallFive = BuildWall(firstFloor, "wallFive", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 2.5f);
-        GameObject wallSix = BuildWall(firstFloor, "wallSix", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 0f);
-        GameObject wallSeven = BuildWall(firstFloor, "wallSeven", new Vector3 (1.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -11.75f, 0f, 0f);
-        GameObject wallEight = BuildWall(firstFloorPlaneTwo, "wallEight", new Vector3 (1.5f, 3f, 1f), SideOne.right,  SideTwo.front, SideThree.nothing, 0.85f, 8.8f, 0f);
-        GameObject wallNine = BuildWall(firstFloor, "wallNine", new Vector3(1f, 3f, 13f), SideOne.left,  SideTwo.front, SideThree.nothing, -13.25f, 0f, 0f);
-        GameObject wallTen = BuildWall(firstFloor, "wallTen", new Vector3(10f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -3.25f, 13f, 0f);
-        GameObject wallAboveCylinder = BuildWall(firstFloor, "wallAboveCylinder", new Vector3(0.5f, 0.5f, 13f), SideOne.left,  SideTwo.front, SideThree.above, -4f, 0f, 2.5f);
-        GameObject wallEleven = BuildWall(firstFloor, "wallEleven", new Vector3(3f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -0.9f, 14f, 0f);
-        GameObject wallTwelve = BuildWall(firstFloor, "wallTwelve", new Vector3(0.5f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 15.5f, 0f);
-        GameObject wallThirteen = BuildWall(firstFloor, "wallThirteen", new Vector3(1f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 21f, 0f);
+        GameObject wallOne = BuildWall(firstFloor, "wallOne", new Vector3(1f, 3f, 9f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f, customBlue);
+        GameObject wallTwo = BuildWall(firstFloor, "wallTwo", new Vector3 (0.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -5f, 0f, 0f, customBlue);
+        GameObject wallThree = BuildWall(firstFloor, "wallThree", new Vector3 (1f, 3f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, -4f, 0f, 0f, customBlue);
+        GameObject wallOneBesideDoorTwo = BuildWall(firstFloor, "wallOneBesideDoorTwo", new Vector3 (0.5f, 3f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 0f, 0f, customWhite);
+        GameObject wallTwoBesideDoorTwo = BuildWall(firstFloor, "wallTwoBesideDoorTwo", new Vector3 (0.5f, 3f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -3.5f, 0f, 0f, customWhite);
+        GameObject wallFour = BuildWall(firstFloor, "wallFour", new Vector3(1f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 0f, 0f, customWhite);
+        GameObject wallFive = BuildWall(firstFloor, "wallFive", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 2.5f, customWhite);
+        GameObject wallSix = BuildWall(firstFloor, "wallSix", new Vector3(8f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, -5f, 0f, 0f, customWhite);
+        GameObject wallSeven = BuildWall(firstFloor, "wallSeven", new Vector3 (1.5f, 3f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, -11.75f, 0f, 0f, customWhite);
+        GameObject wallEight = BuildWall(firstFloorPlaneTwo, "wallEight", new Vector3 (1.5f, 3f, 1f), SideOne.right,  SideTwo.front, SideThree.nothing, 0.85f, 8.8f, 0f, customBlue);
+        GameObject wallNine = BuildWall(firstFloor, "wallNine", new Vector3(1f, 3f, 13f), SideOne.left,  SideTwo.front, SideThree.nothing, -13.25f, 0f, 0f, customMint);
+        GameObject wallTen = BuildWall(firstFloor, "wallTen", new Vector3(10f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -3.25f, 13f, 0f, customWhite);
+        GameObject wallAboveCylinder = BuildWall(firstFloor, "wallAboveCylinder", new Vector3(0.5f, 0.5f, 13f), SideOne.left,  SideTwo.front, SideThree.above, -4f, 0f, 2.5f, customWhite);
+        GameObject wallEleven = BuildWall(firstFloor, "wallEleven", new Vector3(3f, 3f, 1f), SideOne.left,  SideTwo.front, SideThree.nothing, -0.9f, 14f, 0f, customWhite);
+        GameObject wallTwelve = BuildWall(firstFloor, "wallTwelve", new Vector3(0.5f, 3f, 6f), SideOne.left,  SideTwo.front, SideThree.nothing, -1f, 15.5f, 0f, customMint);
+        GameObject wallThirteen = BuildWall(firstFloor, "wallThirteen", new Vector3(1f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 21f, 0f, customWhite);
         //walls for back windows
-        GameObject wallFifteen = BuildWall(firstFloor, "wallFifteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, 2.5f, 21f, 2.5f);
-        GameObject wallSixteen = BuildWall(firstFloor, "wallSixteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, 2.5f, 21f, 0f);
+        GameObject wallFifteen = BuildWall(firstFloor, "wallFifteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.above, 2.5f, 21f, 2.5f, customWhite);
+        GameObject wallSixteen = BuildWall(firstFloor, "wallSixteen", new Vector3(2.75f, 0.5f, 0.15f), SideOne.left,  SideTwo.front, SideThree.nothing, 2.5f, 21f, 0f, customWhite);
 
-        GameObject wallSeventeen = BuildWall(firstFloor, "wallSeventeen", new Vector3(1f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 21f, 0f);
+        GameObject wallSeventeen = BuildWall(firstFloor, "wallSeventeen", new Vector3(1f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 21f, 0f, customBlue);
         //walls near elevator 
-        GameObject wallEighteen = BuildWall(firstFloor, "wallEighteen", new Vector3(0.5f, 7f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 19f, 0f);
-        GameObject wallNineteen = BuildWall(firstFloor, "wallNineteen", new Vector3(0.5f, 7f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 15f, 0f);
-        GameObject wallTwenty = BuildWall(firstFloor, "wallTwenty", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 16.5f, 0f);
-        GameObject wallTwentyOne = BuildWall(firstFloor, "wallTwentyOne", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 19f, 0f);
-        GameObject wallTwentyTwo = BuildWall(firstFloor, "wallTwentyTwo", new Vector3(0.5f, 7f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 17f, 0f);
+        GameObject wallEighteen = BuildWall(firstFloor, "wallEighteen", new Vector3(0.5f, 7f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 19f, 0f, customWhite);
+        GameObject wallNineteen = BuildWall(firstFloor, "wallNineteen", new Vector3(0.5f, 7f, 2f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 15f, 0f, customWhite);
+        GameObject wallTwenty = BuildWall(firstFloor, "wallTwenty", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 16.5f, 0f, customWhite);
+        GameObject wallTwentyOne = BuildWall(firstFloor, "wallTwentyOne", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 19f, 0f, customWhite);
+        GameObject wallTwentyTwo = BuildWall(firstFloor, "wallTwentyTwo", new Vector3(0.5f, 7f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 17f, 0f, customWhite);
         // Rotate 90° around Y relative to current rotation
         wallEight.transform.Rotate(0f, 45f, 0f);
         wallEleven.transform.Rotate(0f, 45f, 0f);
-    
+
+
 
         // --- DOORS ---
         BuildDoor(firstFloor, "doorOne",  new Vector3(1f, 2f, 0.1f), SideOne.left,  SideTwo.front, SideThree.nothing, -1.5f, 0f, 0f,  hingeOnLeft: true,  openCW: false);
@@ -341,6 +353,7 @@ void addMaterial(GameObject obj, Color objColor){
     //set material color and assign it to the object
     mat.color = objColor;
     rend.material = mat;
+
 }
 
 void addGlassMaterial(GameObject obj){
@@ -458,13 +471,14 @@ void BuildGlassPannel(GameObject floor, string pannelName, Vector3 scale, SideOn
 }
 
 GameObject BuildWall(GameObject floor, string wallName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree,
-                float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
+                float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset, Color color){
     // calculate object positions from the plane’s current size and center, instead of hard-coding numbers.
     // this way we can update the plane size if needed without messing everyting else up
     GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
     wall.name = wallName;
     wall.transform.localScale = scale;
     PlaceObjectOnPlane(floor, wall, sideOne, sideTwo, sideThree, edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
+    addMaterial(wall, color);
     return wall;
 }
 
@@ -489,11 +503,12 @@ GameObject BuildPuzzleCube(GameObject floor, string name, Vector3 localScale,
 
 
 GameObject BuildCylinder(GameObject floor, string cylinderName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, SideThree sideThree, 
-                        float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
+                        float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset, Color color){
         GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         cylinder.name = cylinderName;
         cylinder.transform.localScale = scale;
         PlaceObjectOnPlane(floor, cylinder, sideOne, sideTwo, sideThree, edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
+        addMaterial(cylinder, color);
         return cylinder;
     }
 
@@ -572,7 +587,41 @@ Transform BuildElevatorDoor(GameObject floor, string doorName, Vector3 scale, Si
     controller.counterpartDoor = counterpartDoor; 
 
     return doorVisual.transform;
+}
 
+Transform BuildElevatorPlatform(GameObject floor, string platformName, Vector3 scale, SideOne sideOne, SideTwo sideTwo, 
+SideThree sideThree, float edgeOneOffset, float edgeTwoOffset, float edgeThreeOffset){
+    GameObject elevatorPlatform =  GameObject.CreatePrimitive(PrimitiveType.Cube);
+    elevatorPlatform.name = platformName;
+    elevatorPlatform.transform.localScale = scale;
+    PlaceObjectOnPlane(floor, elevatorPlatform, sideOne, sideTwo, sideThree,
+                       edgeOneOffset, edgeTwoOffset, edgeThreeOffset);
+
+    //temp material. will be changed later. 
+    addGlassMaterial(elevatorPlatform);
+
+    // --- create sensor (child) for trigger events ---
+    GameObject sensor = new GameObject(platformName + "_Sensor");
+    sensor.transform.SetParent(elevatorPlatform.transform, worldPositionStays: true);
+    sensor.transform.position = elevatorPlatform.transform.position; 
+
+    // Trigger collider 
+    var trig = sensor.AddComponent<BoxCollider>();
+    trig.isTrigger = true;
+    trig.size = elevatorPlatform.transform.localScale;
+
+    // Rigidbody required for trigger callbacks
+    var rb = sensor.AddComponent<Rigidbody>();
+    rb.isKinematic = true;
+    rb.useGravity = false;
+
+    // Door controller on sensor; tell it which transform to move
+    // this is where the script is called. 
+    // Door controller on sensor; tell it which transform to move
+    var controller = sensor.AddComponent<ElevatorController>();
+    controller.platformTarget = elevatorPlatform.transform;
+
+    return elevatorPlatform.transform;
 
 }
 
@@ -626,5 +675,59 @@ void SpawnPlayer(GameObject floor, Vector3 offsetXZ)
     Vector3 spawn = new Vector3(offsetXZ.x, topY + 0.2f, offsetXZ.y);
     CreateDefaultPlayer(spawn);
 }
+
+
+
+    void ApplySpeckledTexture(GameObject floor)
+    {
+        Texture2D tex = MakeSpeckledTexture(512, new Color(0.97f, 0.94f, 0.86f), Color.black, Color.white, 10000);
+        tex.wrapMode = TextureWrapMode.Repeat;
+        tex.filterMode = FilterMode.Trilinear;
+
+        Material mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        mat.SetTexture("_BaseMap", tex);
+        mat.SetFloat("_Metallic", 0.05f);
+        mat.SetFloat("_Smoothness", 0.3f);
+        mat.SetColor("_BaseColor", new Color(0.97f, 0.94f, 0.86f));
+        mat.SetTextureScale("_BaseMap", new Vector2(8, 8));
+
+        floor.GetComponent<Renderer>().material = mat;
+    }
+
+    Texture2D MakeSpeckledTexture(int size, Color baseColor, Color speckleA, Color speckleB, int count)
+    {
+        Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        Color[] pixels = new Color[size * size];
+
+        // Base color
+        for (int i = 0; i < pixels.Length; i++)
+            pixels[i] = baseColor;
+
+        // Random speckles
+        System.Random rng = new System.Random();
+        for (int i = 0; i < count; i++)
+        {
+            int x = rng.Next(size);
+            int y = rng.Next(size);
+            Color c = Color.Lerp(speckleA, speckleB, (float)rng.NextDouble());
+            int radius = rng.Next(1, 3);
+
+            for (int dx = -radius; dx <= radius; dx++)
+            {
+                for (int dy = -radius; dy <= radius; dy++)
+                {
+                    int px = (x + dx + size) % size;
+                    int py = (y + dy + size) % size;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    if (dist <= radius)
+                        pixels[py * size + px] = Color.Lerp(pixels[py * size + px], c, 0.7f);
+                }
+            }
+        }
+
+        tex.SetPixels(pixels);
+        tex.Apply();
+        return tex;
+    }
 
 }
