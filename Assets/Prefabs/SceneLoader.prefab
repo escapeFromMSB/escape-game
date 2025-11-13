@@ -41,10 +41,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8567705555097237194}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 017b976fac07c38438259d0f5096d69b, type: 3}
+  m_Script: {fileID: 11500000, guid: d94e11ce3d24348ab9b20862744181fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainMenu: MenuScene
-  game: MainGame
-  howTo: HowToPlay
-  credits: Credits

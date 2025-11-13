@@ -1,19 +1,26 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 public class ElevatorController : MonoBehaviour
 {
-    public Transform platformTarget;
+    [Header("Targets & Speed")]
+    public Transform platformTarget;                   // The object that actually moves
+    [SerializeField] private float speed = 1.5f;       // Units per second
+    [SerializeField] private float travelDistance = 3f; // How far to travel vertically (down)
 
-    [SerializeField] private float speed = 1.5f;
-    [SerializeField] private string playerTag = "";
+    [Header("Player Detection")]
+    [SerializeField] private string playerTag = "";     // Optional: set to "Player" to be strict
 
-    [SerializeField] private Vector3 startPos;
-    [SerializeField] private Vector3 endPos;
+    [Header("Computed")]
+    [SerializeField] private Vector3 topPos;
+    [SerializeField] private Vector3 bottomPos;
 
+    [Header("State (read-only)")]
     [SerializeField] private bool moving = false;
-    [SerializeField] private bool goingUp = false;
+    [SerializeField] private bool goingDown = false;    // true → toward bottomPos, false → toward topPos
+    [SerializeField] private bool playerInZone = false;
+
+    private Collider trig;                 // our trigger collider
+    private Collider currentPlayer;        // who is inside
 
     void Start()
     {
@@ -23,77 +30,109 @@ public class ElevatorController : MonoBehaviour
             Debug.LogWarning("[Elevator] platformTarget not set; using this.transform");
         }
 
-        startPos = platformTarget.position;
-        endPos = startPos + new Vector3(0f, -3f, 0f);
+        // Define endpoints (top = current position; bottom = down by travelDistance)
+        topPos = platformTarget.position;
+        bottomPos = topPos + new Vector3(0f, -Mathf.Abs(travelDistance), 0f);
 
-        var col = GetComponent<Collider>();
-        if (col == null)
-            Debug.LogError("[Elevator] No Collider on this object. Add a BoxCollider and check Is Trigger.");
-        else if (!col.isTrigger)
-            Debug.LogWarning("[Elevator] Collider exists but Is Trigger is OFF. Turn it ON for OnTriggerEnter to fire.");
+        // Ensure we have a trigger
+        trig = GetComponent<Collider>();
+        if (trig == null)
+            Debug.LogError("[Elevator] No Collider found. Add a BoxCollider and check 'Is Trigger'.");
+        else if (!trig.isTrigger)
+            Debug.LogWarning("[Elevator] Collider exists but Is Trigger is OFF. Turn it ON.");
 
-        if (speed <= 0f)
-            Debug.LogWarning("[Elevator] Speed <= 0. Set a positive speed.");
+        if (speed <= 0f) Debug.LogWarning("[Elevator] Speed <= 0.");
 
-        Debug.Log($"[Elevator] Start initialized. StartPos={startPos}, EndPos={endPos}");
+        moving = false;
+        goingDown = false;
+
+        Debug.Log($"[Elevator] Ready. Top={topPos}, Bottom={bottomPos}");
     }
 
     void Update()
     {
+        // Handle interaction input
+        if (playerInZone && !moving && Input.GetKeyDown(KeyCode.E))
+        {
+            TryStartRide();
+        }
+
+        // Handle movement
         if (!moving) return;
 
-        Vector3 target = goingUp ? endPos : startPos;
+        Vector3 target = goingDown ? bottomPos : topPos;
         platformTarget.position = Vector3.MoveTowards(platformTarget.position, target, speed * Time.deltaTime);
 
-        if (Vector3.Distance(platformTarget.position, target) < 0.001f)
+        // Arrived?
+        if (Vector3.Distance(platformTarget.position, target) <= 0.001f)
         {
+            platformTarget.position = target; // snap to exact
             moving = false;
-            Debug.Log($"[Elevator] Reached {(goingUp ? "TOP" : "BOTTOM")}");
+            Debug.Log($"[Elevator] Arrived at {(goingDown ? "BOTTOM" : "TOP")}. Awaiting next E press.");
         }
     }
 
-    private bool IsPlayer(Collider other)
+    private void TryStartRide()
     {
+        bool atTop = IsAtTop();
+        bool atBottom = IsAtBottom();
 
-        if (!string.IsNullOrEmpty(playerTag))
-            return other.CompareTag(playerTag);
+        // Only allow starting from endpoints
+        if (!atTop && !atBottom)
+        {
+            Debug.Log("[Elevator] Ignored: platform is between floors.");
+            return;
+        }
 
-        // Fallback: accept anything with a CharacterController
-        return other.GetComponent<CharacterController>() != null;
+        // Decide direction:
+        // At top -> go down; At bottom -> go up
+        goingDown = atTop;
+        moving = true;
 
-        bool hasCC = other.GetComponent<CharacterController>() != null;
-        bool hasRB = other.attachedRigidbody != null;
-        Debug.Log($"[Elevator] Checking collider '{other.name}': CC={hasCC}, RB={hasRB}");
-        return hasCC || hasRB;
+        Debug.Log($"[Elevator] E pressed → moving {(goingDown ? "DOWN" : "UP")}.");
     }
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"[Elevator] OnTriggerEnter called by '{other.name}'");
-
-        if (!IsPlayer(other))
-        {
-            Debug.Log("[Elevator] Collider was NOT a player, ignoring.");
-            return;
-        }
-
-        float dTop = Vector3.Distance(platformTarget.position, endPos);
-        float dBot = Vector3.Distance(platformTarget.position, startPos);
-        goingUp = dTop > dBot;
-
-        moving = true;
-        Debug.Log($"[Elevator] Triggered by '{other.name}' → moving {(goingUp ? "UP" : "DOWN")}");
-        if (IsAtBottom())
-        {
-            Debug.Log("[Elevator] Currently on FIRST floor.");
-        }
-        else if (IsAtTop())
-        {
-            Debug.Log("[Elevator] Currently on SECOND floor.");
-        }
-
-
+        if (!IsPlayer(other)) return;
+        playerInZone = true;
+        currentPlayer = other;
+        // (Optional) You can show a separate UI hint via your own UI system here.
+        // Debug.Log("[Elevator] Player entered zone. Press E to ride.");
     }
 
+    void OnTriggerExit(Collider other)
+    {
+        if (!IsPlayer(other)) return;
+        if (currentPlayer != null && other != currentPlayer) return;
 
+        playerInZone = false;
+        currentPlayer = null;
+        // Debug.Log("[Elevator] Player left zone.");
+    }
+
+    // -------- Helpers --------
+    private bool IsPlayer(Collider other)
+    {
+        if (!string.IsNullOrEmpty(playerTag))
+            return other.CompareTag(playerTag);
+
+        // Heuristic fallback: CharacterController or Rigidbody feels “player-like”
+        return other.GetComponent<CharacterController>() != null || other.attachedRigidbody != null;
+    }
+
+    private bool IsAtTop()    => Vector3.Distance(platformTarget.position, topPos)    < 0.01f;
+    private bool IsAtBottom() => Vector3.Distance(platformTarget.position, bottomPos) < 0.01f;
+
+#if UNITY_EDITOR
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(topPos, 0.08f);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(bottomPos, 0.08f);
+        Gizmos.color = Color.white;
+        Gizmos.DrawLine(topPos, bottomPos);
+    }
+#endif
 }
