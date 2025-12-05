@@ -144,10 +144,15 @@ public class buildScene : MonoBehaviour
         GameObject wallTwenty = BuildWall(firstFloor, "wallTwenty", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 16.5f, 0f, customWhite);
         GameObject wallTwentyOne = BuildWall(firstFloor, "wallTwentyOne", new Vector3(2f, 7f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.5f, 19f, 0f, customWhite);
         GameObject wallTwentyTwo = BuildWall(firstFloor, "wallTwentyTwo", new Vector3(0.5f, 7f, 3f), SideOne.left,  SideTwo.front, SideThree.nothing, 5.75f, 17f, 0f, customWhite);
-
         // Rotate
         wallEight.transform.Rotate(0f, 45f, 0f);
         wallEleven.transform.Rotate(0f, 45f, 0f);
+
+        //code to send to andrew
+        GameObject closingWall = BuildWall(firstFloor, "closingWall", new Vector3(0.5f, 3f, 10f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 6f, 0f, customWhite);
+        GameObject closingWallTwo = BuildWall(firstFloor, "closingWallTwo", new Vector3(5f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 4f, 0f, customBlue);
+        GameObject closingWallThree = BuildWall(firstFloor, "closingWallThree", new Vector3(3f, 3f, 0.5f), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 9f, 0f, customBlue);
+
 
         //--- SECOND FLOOR WALLS ---
         GameObject wallTwentyFour = BuildWall(secondFloor, "wallTwentyFour", new Vector3(0.25f, 3f, 8.25f), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 10.0f, 0f, customMint);
@@ -181,6 +186,8 @@ public class buildScene : MonoBehaviour
         // elevator doors 
         Transform leftDoor = BuildElevatorDoor(firstFloor, "elevatorDoorOne", new Vector3 (0.1f, 2f, 1), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 18f, 0f, null);
         Transform rightDoor = BuildElevatorDoor(firstFloor, "elevatorDoorOne", new Vector3 (0.1f, 2f, 1), SideOne.left,  SideTwo.front, SideThree.nothing, 3.5f, 17f, 0f, leftDoor);
+        Transform leftDoorTop = BuildElevatorDoor(secondFloor, "elevatorDoorOneTop", new Vector3 (0.1f, 2f, 1), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 21.25f, 0f, null);
+        Transform rightDoorTop = BuildElevatorDoor(secondFloor, "elevatorDoorOneTop", new Vector3 (0.1f, 2f, 1), SideOne.left,  SideTwo.front, SideThree.nothing, 0f, 20.25f, 0f, leftDoor);
 
         // --- front windows ---
         GameObject windowOne = BuildWindow(wallFive, "windowOne", new Vector3 (1.25f, 1f, 0.1f), SideOne.left, SideTwo.front, SideThree.below, -0.5f, -0.05f, 0f);
