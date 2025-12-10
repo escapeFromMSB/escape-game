@@ -93,7 +93,7 @@ public class buildScene : MonoBehaviour
             SideOne.left,  // X against left side of the floor area
             SideTwo.front, // Z near the front edge
             SideThree.above,
-            6.5f, 16.0f, 0.0f);
+            4.0f, 16.0f, 0.0f);
 
         addMaterial(console, new Color(0.25f, 0.25f, 0.3f));
 
@@ -223,7 +223,7 @@ public class buildScene : MonoBehaviour
         windowEighteen.transform.Rotate(0f, 180f, 0f);
 
         // --- PLAYER ---
-        SpawnPlayer(firstFloor, new Vector3(-24f, -20f)); 
+        SpawnPlayer(firstFloor, new Vector3(-24f, -25f)); 
 
         /*
         // --- PUZZLE CUBE ---
@@ -248,7 +248,7 @@ public class buildScene : MonoBehaviour
 
         // Near elevator lobby but not right at the player spawn
         BuildPickupItem(firstFloor, "Crowbar",      new Vector3(0.8f, 0.1f, 0.15f),
-            SideOne.left, SideTwo.front, SideThree.nothing,  6.0f, 16.2f, 0f,
+            SideOne.left, SideTwo.front, SideThree.nothing,  5.0f, 17.0f, 0f,
             "crowbar", "Crowbar", 1, new Color(0.6f, 0.3f, 0.1f));
 
         // Second floor hallway
