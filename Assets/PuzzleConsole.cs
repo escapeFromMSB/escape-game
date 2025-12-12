@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class PuzzleConsole : MonoBehaviour
 {
-    public CollectAllPuzzle puzzle;   // assign at runtime from buildScene
+    public CollectAllPuzzle puzzle;   
     public string prompt = "Press Q to start the puzzle";
 
     private bool playerInRange = false;
@@ -44,10 +44,10 @@ public class PuzzleConsole : MonoBehaviour
 
     private bool IsPlayer(Collider other)
     {
-        // Tag preferred if you've set one
+        
         if (other.CompareTag("Player")) return true;
 
-        // Fallback heuristic
+        
         return other.GetComponent<CharacterController>() != null || other.attachedRigidbody != null;
     }
 }

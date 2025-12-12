@@ -16,7 +16,7 @@ public struct InventorySlot
                && count < item.maxStack;
     }
 
-    // Returns leftover that could not be added
+    
     public int Add(InventoryItem other, int amount)
     {
         if (other == null || amount <= 0) return amount;
@@ -38,7 +38,7 @@ public struct InventorySlot
         return amount - toStack;
     }
 
-    // Returns leftover that could not be removed
+    
     public int Remove(int amount)
     {
         if (IsEmpty || amount <= 0) return amount;

@@ -23,7 +23,6 @@ public class InventoryUI : MonoBehaviour
         inv = FindObjectOfType<PlayerInventory>();
         if (!inv)
         {
-            // create a minimal inventory if none exists
             var go = new GameObject("PlayerInventory");
             inv = go.AddComponent<PlayerInventory>();
         }
@@ -74,7 +73,7 @@ public class InventoryUI : MonoBehaviour
         for (int r = 0; r < rows; r++)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Space(Mathf.Max(0, (area.width - totalW) * 0.5f)); // center grid
+            GUILayout.Space(Mathf.Max(0, (area.width - totalW) * 0.5f)); 
 
             for (int c = 0; c < columns; c++)
             {
@@ -86,7 +85,6 @@ public class InventoryUI : MonoBehaviour
                 GUILayout.BeginVertical(GUILayout.Width(cellSize));
                 Rect cell = GUILayoutUtility.GetRect(cellSize, cellSize);
 
-                // draw cell box
                 GUI.Box(cell, GUIContent.none);
 
                 if (!slot.IsEmpty)
@@ -107,7 +105,6 @@ public class InventoryUI : MonoBehaviour
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
-        // drag window by title bar area
         GUI.DragWindow(new Rect(0, 0, windowRect.width, 24f));
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,10 +13,15 @@ public class CollectAllPuzzle : MonoBehaviour
     [Tooltip("How often (seconds) to check once the puzzle is active.")]
     public float checkInterval = 0.25f;
 
+    public event Action<CollectAllPuzzle> Completed;
+
+    private bool isCompleted = false;
+    public bool IsCompleted => isCompleted;
+
     private bool isActive = false;
     private float t = 0f;
 
-    // cache of scene objects (looked up by name)
+    
     private readonly Dictionary<string, GameObject> requiredObjects = new();
 
     public void Initialize(IEnumerable<string> names)
@@ -36,13 +42,14 @@ public class CollectAllPuzzle : MonoBehaviour
         foreach (var n in requiredObjectNames)
         {
             var go = GameObject.Find(n);
-            requiredObjects[n] = go; // may be null if not found yet; we’ll handle it
+            requiredObjects[n] = go; 
         }
     }
 
     public void Begin()
     {
-        // Safety update (in case anything respawned/renamed)
+        if (isCompleted) return;
+        
         RebuildLookup();
 
         isActive = true;
@@ -51,23 +58,23 @@ public class CollectAllPuzzle : MonoBehaviour
 
     void Update()
     {
-        if (!isActive) return;
+        if (!isActive || isCompleted) return;
 
         t += Time.deltaTime;
         if (t < checkInterval) return;
         t = 0f;
 
-        // Refresh any nulls once (in case scene order delayed creation)
-        foreach (var key in new List<string>(requiredObjectNames))
+        
+        var keys = new List<string>(requiredObjects.Keys);
+        foreach (var key in keys)
         {
             if (requiredObjects[key] == null)
             {
-                // Try to find it by name again (it might have existed before begin)
                 requiredObjects[key] = GameObject.Find(key);
             }
         }
 
-        // All collected == none of them exist anymore in the scene
+        
         bool allCollected = true;
         foreach (var kv in requiredObjects)
         {
@@ -77,7 +84,9 @@ public class CollectAllPuzzle : MonoBehaviour
         if (allCollected)
         {
             isActive = false;
+            isCompleted = true;
             CenterMessage.Show("Puzzle Completed!\nYou collected everything.", 3.0f);
+            Completed?.Invoke(this);
         }
     }
 }

@@ -13,24 +13,36 @@ public class IntroPage : MonoBehaviour
         "- Use consoles and solve puzzles to progress.\n\n" +
         "Controls:\n" +
         "- WASD to move\n" +
-        "- Mouse to look\n" +
         "- Space to jump\n" +
         "- R to pick up items\n" +
-        "- I to open inventory";
+        "- I to open inventory\n" +
+        "- E to use the Elevator\n" +
+        "- TRY TO ESCAPE!";
 
     [Header("Input")]
     public KeyCode dismissKey = KeyCode.Space;
 
     private bool showing = true;
+    
+    private static bool hasShownOnce = false;
 
-    // GUI styles
+
+    
     private GUIStyle boxStyle;
     private GUIStyle headerStyle;
     private GUIStyle bodyStyle;
 
     void Start()
     {
-        // Pause the game while intro is up
+        if (hasShownOnce)
+        {
+            showing = false;
+            Time.timeScale = 1f;   
+            return;
+        }
+
+        hasShownOnce = true;
+
         Time.timeScale = 0f;
     }
 
@@ -38,7 +50,7 @@ public class IntroPage : MonoBehaviour
     {
         if (!showing) return;
 
-        // Allow a couple of keys to dismiss
+        
         if (Input.GetKeyDown(dismissKey) ||
             Input.GetKeyDown(KeyCode.Return) ||
             Input.GetKeyDown(KeyCode.KeypadEnter))
@@ -50,13 +62,11 @@ public class IntroPage : MonoBehaviour
     void CloseIntro()
     {
         showing = false;
-        Time.timeScale = 1f; // resume game
+        Time.timeScale = 1f; 
     }
 
     void OnDestroy()
     {
-        // Safety: if this object is destroyed while still showing,
-        // make sure the game isn't left paused.
         if (showing)
         {
             Time.timeScale = 1f;
@@ -67,7 +77,6 @@ public class IntroPage : MonoBehaviour
     {
         if (!showing) return;
 
-        // Lazily create styles inside OnGUI (same pattern as PlayerInteractor)
         if (boxStyle == null)
         {
             boxStyle = new GUIStyle(GUI.skin.box);
@@ -103,7 +112,6 @@ public class IntroPage : MonoBehaviour
         GUI.Label(bodyRect, fullBody, bodyStyle);
     }
 
-    // Small helper to make a solid-color texture for the box background
     Texture2D MakeTex(int width, int height, Color col)
     {
         Color[] pix = new Color[width * height];

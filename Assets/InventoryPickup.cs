@@ -1,6 +1,6 @@
 using UnityEngine;
 
-/// Attach to any pickup object. PlayerInteractor handles LOS/range & collection.
+
 [DisallowMultipleComponent]
 public class InventoryPickup : MonoBehaviour
 {
@@ -22,7 +22,7 @@ public class InventoryPickup : MonoBehaviour
     public void SetHoverEligible(bool eligible)
     {
         canPickUpNow = eligible;
-        if (!eligible) transform.localScale = baseScale; // stop/pin scale
+        if (!eligible) transform.localScale = baseScale; 
     }
 
     void Update()

@@ -22,13 +22,13 @@ MonoBehaviour:
   - heading: URP Documentation
     text:
     linkText: Read more about URP
-    url: https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest
+    url: https:
   - heading: Forums
     text:
     linkText: Get answers and support
-    url: https://forum.unity.com/forums/universal-render-pipeline.383/
+    url: https:
   - heading: Report bugs
     text:
     linkText: Submit a report
-    url: https://unity3d.com/unity/qa/bug-reporting
+    url: https:
   loadedLayout: 1

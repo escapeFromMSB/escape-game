@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
-    // ========= Nested data types (no more global-name collisions) =========
+    
     [System.Serializable]
     public class InventoryItem
     {
@@ -14,14 +14,21 @@ public class PlayerInventory : MonoBehaviour
 
         public static InventoryItem Make(string id, string label, int amount, int maxStack = 99)
         {
-            return new InventoryItem { id = id, displayName = label, amount = amount, maxStack = maxStack };
+            return new InventoryItem
+            {
+                id = id,
+                displayName = label,
+                amount = amount,
+                maxStack = maxStack
+            };
         }
     }
 
     [System.Serializable]
     public class InventorySlot
     {
-        public InventoryItem item; // null or amount==0 means empty
+        public InventoryItem item;
+
         public bool IsEmpty => item == null || item.amount <= 0;
 
         public bool CanStack(string id, int addAmount)
@@ -30,21 +37,19 @@ public class PlayerInventory : MonoBehaviour
             return item.amount < item.maxStack && addAmount > 0;
         }
 
-        /// <summary>Returns how many were actually added to this slot (0..addAmount).</summary>
+        
         public int AddToStack(string id, string label, int addAmount, int maxStack = 99)
         {
             if (addAmount <= 0) return 0;
 
             if (IsEmpty)
             {
-                int put = Mathf.Min(addAmount, maxStack);
-                item = InventoryItem.Make(id, label, put, maxStack);
-                return put;
+                item = InventoryItem.Make(id, label, 0, maxStack);
             }
 
             if (item.id != id) return 0;
 
-            int space = item.maxStack - item.amount;
+            int space = Mathf.Max(0, item.maxStack - item.amount);
             int putIn = Mathf.Clamp(addAmount, 0, space);
             item.amount += putIn;
             return putIn;
@@ -52,7 +57,7 @@ public class PlayerInventory : MonoBehaviour
 
         public void Clear() { item = null; }
     }
-    // =====================================================================
+    
 
     [Header("Inventory Config")]
     public int capacity = 16;
@@ -64,23 +69,26 @@ public class PlayerInventory : MonoBehaviour
     void Awake()
     {
         if (slots == null) slots = new List<InventorySlot>();
-        if (slots.Count < capacity)
+
+        
+        if (slots.Count != capacity)
         {
-            for (int i = slots.Count; i < capacity; i++)
+            slots.Clear();
+            for (int i = 0; i < capacity; i++)
                 slots.Add(new InventorySlot());
         }
     }
 
-    /// <summary>
-    /// Add items into the inventory. Returns true if the full amount was added.
-    /// Tries to stack first, then fills empty slots.
-    /// </summary>
+    
+    
+    
+    
     public bool TryAddItem(string id, string label, int amount)
     {
         if (amount <= 0) return true;
         int remaining = amount;
 
-        // 1) fill existing stacks
+        
         for (int i = 0; i < slots.Count && remaining > 0; i++)
         {
             var s = slots[i];
@@ -91,7 +99,7 @@ public class PlayerInventory : MonoBehaviour
             }
         }
 
-        // 2) fill empty slots
+        
         for (int i = 0; i < slots.Count && remaining > 0; i++)
         {
             var s = slots[i];
@@ -99,6 +107,47 @@ public class PlayerInventory : MonoBehaviour
             {
                 int put = s.AddToStack(id, label, remaining, defaultMaxStack);
                 remaining -= put;
+            }
+        }
+
+        return remaining == 0;
+    }
+
+    public bool HasItem(string id, int minAmount = 1)
+    {
+        if (minAmount <= 0) return true;
+
+        int total = 0;
+
+        foreach (var slot in slots)
+        {
+            if (!slot.IsEmpty && slot.item.id == id)
+            {
+                total += slot.item.amount;
+                if (total >= minAmount)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    public bool RemoveItem(string id, int amount = 1)
+    {
+        int remaining = amount;
+
+        for (int i = 0; i < slots.Count && remaining > 0; i++)
+        {
+            var s = slots[i];
+            if (s != null && !s.IsEmpty && s.item != null && s.item.id == id)
+            {
+                int take = Mathf.Min(s.item.amount, remaining);
+                s.item.amount -= take;
+                remaining -= take;
+
+                if (s.item.amount <= 0)
+                    s.Clear();
             }
         }
 

@@ -3,13 +3,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Game/Inventory Item", fileName = "NewInventoryItem")]
 public class InventoryItem : ScriptableObject
 {
-    public string id;             // unique key
-    public string displayName;    // player-facing
+    public string id;             
+    public string displayName;    
     public bool stackable = true;
     [Min(1)] public int maxStack = 1;
-    public GameObject dropPrefab; // optional world prefab to drop
+    public GameObject dropPrefab; 
 
-    // Handy factory for runtime-only items (no asset needed)
+    
     public static InventoryItem Make(string id, string name, bool stackable, int maxStack, GameObject dropPrefab = null)
     {
         var x = CreateInstance<InventoryItem>();

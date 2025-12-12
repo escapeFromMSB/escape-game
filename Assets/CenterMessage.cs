@@ -40,7 +40,7 @@ public class CenterMessage : MonoBehaviour
         text = textGO.AddComponent<Text>();
         text.alignment = TextAnchor.MiddleCenter;
 
-        // ✅ Unity 6 / newer: use LegacyRuntime.ttf instead of Arial.ttf
+        
         var builtinFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.font = builtinFont;
         text.fontSize = 28;

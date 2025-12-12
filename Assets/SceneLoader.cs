@@ -9,13 +9,13 @@ public class SceneLoader : MonoBehaviour
     [SerializeField] private string howTo    = "HowToPlay";
     [SerializeField] private string credits  = "Credits";
 
-    // Pre-wired helpers (no typing strings in OnClick)
+    
     public void LoadMainMenu() => LoadByName(mainMenu);
     public void LoadGame()     => LoadByName(game);
     public void LoadHowTo()    => LoadByName(howTo);
     public void LoadCredits()  => LoadByName(credits);
 
-    // Generic loader (use if you want to type the name in OnClick)
+    
     public void LoadByName(string sceneName)
     {
         if (string.IsNullOrWhiteSpace(sceneName))
